@@ -13,8 +13,12 @@ UCLASS()
 class PUZZLE_API ABattleShipGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
-	
-	
-	
+
+public:
+	ABattleShipGameModeBase();
+
+	virtual void BeginPlay() override;
+
+private:
+	int MaxNumberPlayers;
 };
