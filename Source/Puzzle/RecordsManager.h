@@ -8,6 +8,9 @@
 
 class UBattleShipSaveGame;
 
+/**
+* Custom class that defines the logic of records
+*/
 UCLASS()
 class PUZZLE_API ARecordsManager : public AActor
 {
@@ -31,7 +34,4 @@ public:
 private:
 	UPROPERTY()
 		TWeakObjectPtr<UBattleShipSaveGame> BattleShipSaveGamePtr;
-		TMap<FString, float> Records;
-
-		void LoadTopTenRecords(TMap<FString, float>& RecordsFrom, TMap<FString, float>& RecordsTo);
 };

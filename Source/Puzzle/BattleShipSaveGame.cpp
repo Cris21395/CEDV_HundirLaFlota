@@ -2,8 +2,4 @@
 
 #include "BattleShipSaveGame.h"
 
-UBattleShipSaveGame::UBattleShipSaveGame() 
-{
-	SaveSlotName = TEXT("BattleShipSaveSlot");
-	UserIndex = 0;
-}
+UBattleShipSaveGame::UBattleShipSaveGame() : SaveSlotName(SAVE_SLOT_NAME), UserIndex(USER_INDEX) {}

@@ -11,25 +11,23 @@ ARecordsManager::ARecordsManager() : BattleShipSaveGamePtr(nullptr) {}
 void ARecordsManager::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	// Create an instance of a SaveGame object
-	BattleShipSaveGamePtr = Cast<UBattleShipSaveGame>(UGameplayStatics::CreateSaveGameObject(UBattleShipSaveGame::StaticClass()));
 
 	// if save game exist
-	if (UGameplayStatics::DoesSaveGameExist(BattleShipSaveGamePtr->SaveSlotName, BattleShipSaveGamePtr->UserIndex))
+	if (UGameplayStatics::DoesSaveGameExist(SAVE_SLOT_NAME, USER_INDEX))
 	{
 		// Create an instance of a LoadGame object
-		BattleShipSaveGamePtr = Cast<UBattleShipSaveGame>(UGameplayStatics::LoadGameFromSlot(BattleShipSaveGamePtr->SaveSlotName,
-			BattleShipSaveGamePtr->UserIndex));
+		BattleShipSaveGamePtr = Cast<UBattleShipSaveGame>(UGameplayStatics::LoadGameFromSlot(SAVE_SLOT_NAME, USER_INDEX));
 	}
-
-	// Load Records
-	LoadTopTenRecords(BattleShipSaveGamePtr->Records, Records);
+	else
+	{
+		// Create an instance of a SaveGame object
+		BattleShipSaveGamePtr = Cast<UBattleShipSaveGame>(UGameplayStatics::CreateSaveGameObject(UBattleShipSaveGame::StaticClass()));
+	}
 }
 
 TMap<FString, float> ARecordsManager::GetRecords() const
 {
-	return Records;
+	return BattleShipSaveGamePtr->Records;
 }
 
 
@@ -46,24 +44,5 @@ void ARecordsManager::SaveNewRecord(FString PlayerName, float Duration)
 
 	// Save the game
 	UGameplayStatics::SaveGameToSlot(BattleShipSaveGamePtr.Get(), BattleShipSaveGamePtr->SaveSlotName, BattleShipSaveGamePtr->UserIndex);
-}
-
-void ARecordsManager::LoadTopTenRecords(TMap<FString, float>& RecordsFrom, TMap<FString, float>& RecordsTo)
-{
-	TArray<FString> Keys;
-	TArray<float> Values;
-
-	if (RecordsFrom.Num() > 0)
-	{
-		RecordsFrom.GenerateKeyArray(Keys);
-		RecordsFrom.GenerateValueArray(Values);
-
-		int Size = RecordsFrom.Num() < 10 ? RecordsFrom.Num() : 10;
-
-		for (int i = 0; i < Size; i++) 
-		{ 
-			RecordsTo.Add(Keys[i], Values[i]); 
-		}
-	}
 }
 
