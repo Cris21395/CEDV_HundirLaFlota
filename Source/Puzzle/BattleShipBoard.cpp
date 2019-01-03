@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BattleShipBoard.h"
-#include "PuzzleBlock.h"
+#include "Block.h"
 
 // Sets default values
 ABattleShipBoard::ABattleShipBoard()
@@ -18,10 +18,16 @@ ABattleShipBoard::ABattleShipBoard()
 			int32 Index = CalculateIndex(X_Index, Y_Index);
 
 			// Make position vector
-			const FVector location = CalculateLocation(X_Index, Y_Index);
+			const FVector location = CalculateLocation(Index);
 
 			// Spawn block
-			//APuzzleBlock* block = GetWorld()->SpawnActor<APuzzleBlock>(location, FRotator(0.0f, 0.0f, 0.0f));
+			ABlock* NewBlock = GetWorld()->SpawnActor<ABlock>(location, FRotator(0.0f, 0.0f, 0.0f));
+
+			// Tell the block about its owner
+			if (NewBlock != nullptr)
+			{
+				NewBlock->OwningBoard = this;
+			}
 		}
 	}
 }
@@ -45,8 +51,11 @@ int32 ABattleShipBoard::CalculateIndex(int32 X, int32 Y)
 	return X + (Size * Y);
 }
 
-FVector ABattleShipBoard::CalculateLocation(int32 X, int32 Y)
+FVector ABattleShipBoard::CalculateLocation(int32 Index)
 {
-	return FVector();
+	float X_Offset = (Index / Size) * BlockSpacing; // Divide by dimension
+	float Y_Offset = (Index % Size) * BlockSpacing; // Modulo gives remainder
+
+	return FVector(X_Offset, Y_Offset, 0.0f);
 }
 

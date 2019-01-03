@@ -20,8 +20,11 @@ public:
 	ABattleShipBoard();
 
 	// Number of elements along each side of the grid
-	UPROPERTY()
-		int32 Size = 10;
+	UPROPERTY(BlueprintReadOnly, Category = "Board")
+		int32 Size;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Board")
+		float BlockSpacing;
 	
 	// Array of indexes that have been selected
 	UPROPERTY()
@@ -40,5 +43,5 @@ private:
 	int32 CalculateIndex(int32 X, int32 Y);
 
 	// Calculate location (position X, position Y) from x,y coordinates
-	FVector CalculateLocation(int32 X, int32 Y);
+	FVector CalculateLocation(int32 Index);
 };
