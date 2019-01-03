@@ -16,7 +16,7 @@ ABattleShipBoard::ABattleShipBoard()
 	// Default values
 	Size = 10;
 	BlockSpacing = 115.0f;
-	SizeOfBlock = FVector(0.3f, 0.3f, 0.15f);
+	SizeOfBlock = FVector(0.3f, 0.3f, 0.1f);
 }
 
 // Called when the game starts or when spawned

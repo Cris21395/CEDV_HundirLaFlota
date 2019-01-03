@@ -33,7 +33,7 @@ ABlock::ABlock()
 	// Create default static mesh component
 	BlockMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BlockMesh0"));
 	BlockMesh->SetStaticMesh(ConstructorStatics.PlaneMesh.Get());
-	BlockMesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.15f));
+	BlockMesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.1f));
 	BlockMesh->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
 	BlockMesh->SetMaterial(0, ConstructorStatics.Transparency_Blue_Material.Get());
 	BlockMesh->SetupAttachment(DummyRoot.Get());
