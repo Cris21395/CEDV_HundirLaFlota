@@ -13,8 +13,7 @@ UCLASS()
 class PUZZLE_API ABattleShipPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
-	
-	
-	
+
+public:
+	ABattleShipPlayerController();
 };

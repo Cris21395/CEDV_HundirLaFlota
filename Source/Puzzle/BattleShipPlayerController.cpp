@@ -2,6 +2,9 @@
 
 #include "BattleShipPlayerController.h"
 
-
-
-
+ABattleShipPlayerController::ABattleShipPlayerController()
+{
+	bShowMouseCursor = true;
+	bEnableClickEvents = true;
+	bEnableMouseOverEvents = true;
+}
