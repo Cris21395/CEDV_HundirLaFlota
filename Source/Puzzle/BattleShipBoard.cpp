@@ -2,6 +2,8 @@
 
 #include "BattleShipBoard.h"
 #include "Block.h"
+#include "EngineMinimal.h"
+
 
 // Sets default values
 ABattleShipBoard::ABattleShipBoard()
@@ -51,6 +53,7 @@ void ABattleShipBoard::BeginPlay()
 			}
 		}
 	}
+	SpawnRandomShips();
 }
 
 // Called every frame
@@ -73,3 +76,13 @@ FVector ABattleShipBoard::CalculateLocation(int32 Index)
 	return FVector(X_Offset, Y_Offset, 0.0f);
 }
 
+void ABattleShipBoard::SpawnRandomShips()
+{
+	FVector location = CalculateLocation(0) + GetActorLocation();
+	//ABlock* NewBlock = GetWorld()->SpawnActor<ABlock>(location, FRotator(0.0f, 0.0f, 0.0f));
+	//TWeakObjectPtr<UMaterialInstanceDynamic> Material = NewBlock->GetBlockMesh()->CreateAndSetMaterialInstanceDynamic(0);
+	//Material->SetVectorParameterValue(FName(TEXT("Color")), FLinearColor(1.0f, 0.0f, 0.0f));
+	//NewBlock->GetBlockMesh()->SetRelativeScale3D(FVector(0.3f, 0.6f, 0.1f));
+	AShip* NewShip = GetWorld()->SpawnActor<AShip>(location, FRotator(0.0f, 45.0f, 90.0f));
+	NewShip->GetShipMesh()->SetRelativeScale3D(FVector(50.0f, 50.0f, 50.0f));
+}

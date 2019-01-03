@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Ship.h"
 #include "GameFramework/Actor.h"
 #include "BattleShipBoard.generated.h"
 
@@ -56,4 +57,6 @@ public:
 
 	// Returns DummyRoot subobject
 	FORCEINLINE class USceneComponent* GetDummyRoot() const { return DummyRoot.Get(); }
+
+	void SpawnRandomShips();
 };
