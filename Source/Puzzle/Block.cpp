@@ -13,14 +13,14 @@ ABlock::ABlock()
 	struct FConstructorStatics
 	{
 		ConstructorHelpers::FObjectFinderOptional<UStaticMesh> PlaneMesh;
-		ConstructorHelpers::FObjectFinderOptional<UMaterial> BaseMaterial;
-		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> BlueMaterial;
-		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> OrangeMaterial;
+		ConstructorHelpers::FObjectFinderOptional<UMaterial> Transparency_Material;
+		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Blue_Material;
+		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Yellow_Material;
 		FConstructorStatics()
-			: PlaneMesh(TEXT("/Game/Puzzle/Meshes/PuzzleCube.PuzzleCube"))
-			, BaseMaterial(TEXT("/Game/Puzzle/Meshes/BaseMaterial.BaseMaterial"))
-			, BlueMaterial(TEXT("/Game/Puzzle/Meshes/BlueMaterial.BlueMaterial"))
-			, OrangeMaterial(TEXT("/Game/Puzzle/Meshes/OrangeMaterial.OrangeMaterial"))
+			: PlaneMesh(TEXT("/Game/Geometry/CubeMeshes/Cube.Cube"))
+			, Transparency_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Material.Transparency_Material"))
+			, Transparency_Blue_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Blue_Material_Inst.Transparency_Blue_Material_Inst"))
+			, Transparency_Yellow_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Orange_Material_Inst.Transparency_Orange_Material_Inst"))
 		{
 		}
 	};
@@ -28,22 +28,25 @@ ABlock::ABlock()
 
 	// Create dummy root scene component
 	DummyRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Dummy0"));
-	RootComponent = DummyRoot;
+	RootComponent = DummyRoot.Get();
 
-	// Create static mesh component
+	// Create default static mesh component
 	BlockMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BlockMesh0"));
 	BlockMesh->SetStaticMesh(ConstructorStatics.PlaneMesh.Get());
 	BlockMesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.15f));
 	BlockMesh->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
-	BlockMesh->SetMaterial(0, ConstructorStatics.BlueMaterial.Get());
-	BlockMesh->SetupAttachment(DummyRoot);
+	BlockMesh->SetMaterial(0, ConstructorStatics.Transparency_Blue_Material.Get());
+	BlockMesh->SetupAttachment(DummyRoot.Get());
+
+	// Add events
 	BlockMesh->OnClicked.AddDynamic(this, &ABlock::BlockClicked);
-	BlockMesh->OnInputTouchBegin.AddDynamic(this, &ABlock::OnFingerPressedBlock);
+	BlockMesh->OnBeginCursorOver.AddDynamic(this, &ABlock::BlockBeginMouseOver);
+	BlockMesh->OnEndCursorOver.AddDynamic(this, &ABlock::BlockEndMouseOver);
 
 	// Save a pointer to the orange material
-	BaseMaterial = ConstructorStatics.BaseMaterial.Get();
-	BlueMaterial = ConstructorStatics.BlueMaterial.Get();
-	OrangeMaterial = ConstructorStatics.OrangeMaterial.Get();
+	Transparency_Material = ConstructorStatics.Transparency_Material.Get();
+	Transparency_Blue_Material = ConstructorStatics.Transparency_Blue_Material.Get();
+	Transparency_Yellow_Material = ConstructorStatics.Transparency_Yellow_Material.Get();
 }
 
 void ABlock::BlockClicked(UPrimitiveComponent* ClickedComp, FKey ButtonClicked)
@@ -51,10 +54,14 @@ void ABlock::BlockClicked(UPrimitiveComponent* ClickedComp, FKey ButtonClicked)
 	HandleClicked();
 }
 
-
-void ABlock::OnFingerPressedBlock(ETouchIndex::Type FingerIndex, UPrimitiveComponent* TouchedComponent)
+void ABlock::BlockBeginMouseOver(UPrimitiveComponent * MouseOverComp)
 {
-	HandleClicked();
+	Highlight(true);
+}
+
+void ABlock::BlockEndMouseOver(UPrimitiveComponent * MouseOverComp)
+{
+	Highlight(false);
 }
 
 void ABlock::HandleClicked()
@@ -65,7 +72,7 @@ void ABlock::HandleClicked()
 		bIsActive = true;
 
 		// Change material
-		BlockMesh->SetMaterial(0, OrangeMaterial);
+		BlockMesh->SetMaterial(0, Transparency_Material.Get());
 	}
 }
 
@@ -79,10 +86,10 @@ void ABlock::Highlight(bool bOn)
 
 	if (bOn)
 	{
-		BlockMesh->SetMaterial(0, BaseMaterial);
+		BlockMesh->SetMaterial(0, Transparency_Yellow_Material.Get());
 	}
 	else
 	{
-		BlockMesh->SetMaterial(0, BlueMaterial);
+		BlockMesh->SetMaterial(0, Transparency_Blue_Material.Get());
 	}
 }

@@ -9,8 +9,23 @@ ABattleShipBoard::ABattleShipBoard()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Loop to spawn each block that compose the board
-	for (int32 Y_Index = 0; Y_Index < Size; Y_Index++) 
+	// Create dummy root scene component
+	DummyRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Dummy0"));
+	RootComponent = DummyRoot.Get();
+
+	// Default values
+	Size = 10;
+	BlockSpacing = 115.0f;
+	SizeOfBlock = FVector(0.3f, 0.3f, 0.15f);
+}
+
+// Called when the game starts or when spawned
+void ABattleShipBoard::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	// Loop to spawn each of the blocks that composes the board
+	for (int32 Y_Index = 0; Y_Index < Size; Y_Index++)
 	{
 		for (int32 X_Index = 0; X_Index < Size; X_Index++)
 		{
@@ -18,10 +33,16 @@ ABattleShipBoard::ABattleShipBoard()
 			int32 Index = CalculateIndex(X_Index, Y_Index);
 
 			// Make position vector
-			const FVector location = CalculateLocation(Index);
+			const FVector location = CalculateLocation(Index) + GetActorLocation();
 
 			// Spawn block
 			ABlock* NewBlock = GetWorld()->SpawnActor<ABlock>(location, FRotator(0.0f, 0.0f, 0.0f));
+
+			// Modify its scale
+			NewBlock->GetBlockMesh()->SetRelativeScale3D(SizeOfBlock);
+
+			// Attach to this actor
+			NewBlock->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 
 			// Tell the block about its owner
 			if (NewBlock != nullptr)
@@ -30,13 +51,6 @@ ABattleShipBoard::ABattleShipBoard()
 			}
 		}
 	}
-}
-
-// Called when the game starts or when spawned
-void ABattleShipBoard::BeginPlay()
-{
-	Super::BeginPlay();
-	
 }
 
 // Called every frame
