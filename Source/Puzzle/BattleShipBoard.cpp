@@ -4,7 +4,6 @@
 #include "Block.h"
 #include "EngineMinimal.h"
 
-
 // Sets default values
 ABattleShipBoard::ABattleShipBoard()
 {
@@ -38,7 +37,7 @@ void ABattleShipBoard::BeginPlay()
 			const FVector location = CalculateLocation(Index) + GetActorLocation();
 
 			// Spawn block
-			ABlock* NewBlock = GetWorld()->SpawnActor<ABlock>(location, FRotator(0.0f, 0.0f, 0.0f));
+			TWeakObjectPtr<ABlock> NewBlock = GetWorld()->SpawnActor<ABlock>(location, FRotator(0.0f, 0.0f, 0.0f));
 
 			// Modify its scale
 			NewBlock->GetBlockMesh()->SetRelativeScale3D(SizeOfBlock);
@@ -49,11 +48,12 @@ void ABattleShipBoard::BeginPlay()
 			// Tell the block about its owner
 			if (NewBlock != nullptr)
 			{
+				NewBlock->bIsPressed = false;
 				NewBlock->OwningBoard = this;
 			}
 		}
 	}
-	SpawnRandomShips();
+	//SpawnRandomShips();
 }
 
 // Called every frame
@@ -63,8 +63,16 @@ void ABattleShipBoard::Tick(float DeltaTime)
 
 }
 
+ABlock * ABattleShipBoard::GetBlockByIndex(int32 Index) const
+{
+	ABlock* Block = Cast<ABlock>(RootComponent->GetChildComponent(Index)->GetOwner());
+
+	return Block;
+}
+
 int32 ABattleShipBoard::CalculateIndex(int32 X, int32 Y)
 {
+	// return an index from 0 to (Size * Size)
 	return X + (Size * Y);
 }
 
@@ -76,6 +84,7 @@ FVector ABattleShipBoard::CalculateLocation(int32 Index)
 	return FVector(X_Offset, Y_Offset, 0.0f);
 }
 
+/*
 void ABattleShipBoard::SpawnRandomShips()
 {
 	FVector location = CalculateLocation(0) + GetActorLocation();
@@ -83,6 +92,7 @@ void ABattleShipBoard::SpawnRandomShips()
 	//TWeakObjectPtr<UMaterialInstanceDynamic> Material = NewBlock->GetBlockMesh()->CreateAndSetMaterialInstanceDynamic(0);
 	//Material->SetVectorParameterValue(FName(TEXT("Color")), FLinearColor(1.0f, 0.0f, 0.0f));
 	//NewBlock->GetBlockMesh()->SetRelativeScale3D(FVector(0.3f, 0.6f, 0.1f));
-	AShip* NewShip = GetWorld()->SpawnActor<AShip>(location, FRotator(0.0f, 45.0f, 90.0f));
+	TWeakObjectPtr<AShip> NewShip = GetWorld()->SpawnActor<AShip>(location, FRotator(0.0f, 45.0f, 90.0f));
 	NewShip->GetShipMesh()->SetRelativeScale3D(FVector(50.0f, 50.0f, 50.0f));
 }
+*/

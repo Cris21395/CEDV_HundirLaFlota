@@ -2,6 +2,7 @@
 
 #include "Block.h"
 #include "BattleShipBoard.h"
+#include "EngineMinimal.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
@@ -16,11 +17,15 @@ ABlock::ABlock()
 		ConstructorHelpers::FObjectFinderOptional<UMaterial> Transparency_Material;
 		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Blue_Material;
 		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Yellow_Material;
+		ConstructorHelpers::FObjectFinderOptional<USoundBase> AudioExplosion;
+		ConstructorHelpers::FObjectFinderOptional<UParticleSystem> ExplosionParticleSystem;
 		FConstructorStatics()
 			: PlaneMesh(TEXT("/Game/Geometry/CubeMeshes/Cube.Cube"))
 			, Transparency_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Material.Transparency_Material"))
 			, Transparency_Blue_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Blue_Material_Inst.Transparency_Blue_Material_Inst"))
 			, Transparency_Yellow_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Orange_Material_Inst.Transparency_Orange_Material_Inst"))
+			, AudioExplosion(TEXT("/Game/StarterContent/Audio/Explosion01.Explosion01"))
+			, ExplosionParticleSystem(TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion"))
 		{
 		}
 	};
@@ -38,15 +43,21 @@ ABlock::ABlock()
 	BlockMesh->SetMaterial(0, ConstructorStatics.Transparency_Blue_Material.Get());
 	BlockMesh->SetupAttachment(DummyRoot.Get());
 
-	// Add events
+	// Register events
 	BlockMesh->OnClicked.AddDynamic(this, &ABlock::BlockClicked);
 	BlockMesh->OnBeginCursorOver.AddDynamic(this, &ABlock::BlockBeginMouseOver);
 	BlockMesh->OnEndCursorOver.AddDynamic(this, &ABlock::BlockEndMouseOver);
 
-	// Save a pointer to the orange material
+	// Save a pointer to these materials
 	Transparency_Material = ConstructorStatics.Transparency_Material.Get();
 	Transparency_Blue_Material = ConstructorStatics.Transparency_Blue_Material.Get();
 	Transparency_Yellow_Material = ConstructorStatics.Transparency_Yellow_Material.Get();
+
+	// Save pointer to audio explosion
+	AudioExplosion = ConstructorStatics.AudioExplosion.Get();
+
+	// Save a pointer to explosion
+	ExplosionParticleSystem = ConstructorStatics.ExplosionParticleSystem.Get();
 }
 
 void ABlock::BlockClicked(UPrimitiveComponent* ClickedComp, FKey ButtonClicked)
@@ -67,19 +78,31 @@ void ABlock::BlockEndMouseOver(UPrimitiveComponent * MouseOverComp)
 void ABlock::HandleClicked()
 {
 	// Check we are not already active
-	if (!bIsActive)
+	if (!bIsPressed)
 	{
-		bIsActive = true;
+		bIsPressed = true;
 
 		// Change material
 		BlockMesh->SetMaterial(0, Transparency_Material.Get());
+
+		// If block has a ship, we fire a explosion
+		if (bHasShip)
+		{
+			// Play audio explosion
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), AudioExplosion.Get(), GetActorLocation());
+
+			// Fire explosion particle system
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticleSystem.Get(), GetActorLocation());
+
+			bHasShip = false;
+		}
 	}
 }
 
 void ABlock::Highlight(bool bOn)
 {
 	// Do not highlight if the block has already been activated.
-	if (bIsActive)
+	if (bIsPressed)
 	{
 		return;
 	}

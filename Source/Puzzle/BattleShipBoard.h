@@ -3,9 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Ship.h"
 #include "GameFramework/Actor.h"
 #include "BattleShipBoard.generated.h"
+
+class ABlock;
 
 /**
 * BattleShipBoard class is an actor to create a board and mantain 
@@ -18,7 +19,7 @@ class PUZZLE_API ABattleShipBoard : public AActor
 
 	// Dummy root component. It is used so that class can be Movable
 	UPROPERTY(Category = Grid, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TWeakObjectPtr<USceneComponent> DummyRoot;
+		TWeakObjectPtr<USceneComponent> DummyRoot;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -55,8 +56,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Get a Block of the board giving an index
+	ABlock* GetBlockByIndex(int32 Index) const;
+
+	//void SpawnRandomShips();
+
 	// Returns DummyRoot subobject
 	FORCEINLINE class USceneComponent* GetDummyRoot() const { return DummyRoot.Get(); }
-
-	void SpawnRandomShips();
 };

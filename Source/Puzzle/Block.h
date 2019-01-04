@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Materials/Material.h"
+#include "Materials/MaterialInstance.h"
 #include "GameFramework/Actor.h"
 #include "Block.generated.h"
 
 class ABattleShipBoard;
-class UMaterial;
-class UMaterialInstance;
 
 /**
 * Block class used to create a board and be clickable
@@ -29,9 +29,17 @@ class PUZZLE_API ABlock : public AActor
 public:
 	ABlock();
 
-	// Are we currently active?
-	bool bIsActive;
+	// Is it pressed?
+	bool bIsPressed;
 
+	// Does it have a ship?
+	bool bHasShip;
+
+	// Board that owns this block
+	UPROPERTY()
+		TWeakObjectPtr<ABattleShipBoard> OwningBoard;
+
+private:
 	// Pointer to white material used on the focused block
 	UPROPERTY()
 		TWeakObjectPtr<UMaterial> Transparency_Material;
@@ -44,9 +52,13 @@ public:
 	UPROPERTY()
 		TWeakObjectPtr<UMaterialInstance> Transparency_Yellow_Material;
 
-	// Board that owns us
+	// Pointer to explosion used to be fired when a ship holded by this block has been hit
 	UPROPERTY()
-		TWeakObjectPtr<ABattleShipBoard> OwningBoard;
+		TWeakObjectPtr<UParticleSystem> ExplosionParticleSystem;
+
+	// Pointer to audio explosion used to be played along ExplosionParticleSystem
+	UPROPERTY()
+		TWeakObjectPtr<USoundBase> AudioExplosion;
 
 	// Handle the block being clicked
 	UFUNCTION()
