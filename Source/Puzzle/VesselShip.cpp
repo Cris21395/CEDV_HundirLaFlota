@@ -15,3 +15,11 @@ AVesselShip::AVesselShip()
 	Size = 2;
 }
 
+void AVesselShip::SetOccupiedBlocks(int32 SpawnIndex, TWeakObjectPtr<ABattleShipBoard> BattleShipBoardPtr)
+{
+	for (int i = 0; i < Size; i++) {
+		OccupiedPositions.Add(SpawnIndex + BattleShipBoardPtr->Size*i);
+		TWeakObjectPtr<ABlock> Block = BattleShipBoardPtr->GetBlockByIndex(SpawnIndex + BattleShipBoardPtr->Size*i);
+		Block->bHasShip = true;
+	}
+}

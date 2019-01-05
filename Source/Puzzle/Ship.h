@@ -3,6 +3,8 @@
 #pragma once
 
 #include "ShipType.h"
+#include "BattleShipBoard.h"
+#include "Block.h"
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "CoreMinimal.h"
@@ -30,7 +32,9 @@ public:
 	TWeakObjectPtr<UStaticMeshComponent> ShipMesh;
 	int32 IndexOrigin;
 	int32 Size;
-	//TList<int32> OccupiedPositions;
+	TArray<int32> OccupiedPositions;
 	FORCEINLINE class UStaticMeshComponent* GetShipMesh() const { return ShipMesh.Get(); }
 	
+	// Override in children to set occupied blocks for each ship type
+	virtual void SetOccupiedBlocks(int32 SpawnIndex, TWeakObjectPtr<ABattleShipBoard> BattleShipBoardPtr) PURE_VIRTUAL(AShip::SetOccupiedBlocks, );
 };

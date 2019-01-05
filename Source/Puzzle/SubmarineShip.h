@@ -17,6 +17,6 @@ class PUZZLE_API ASubmarineShip : public AShip
 public:
 	ASubmarineShip();
 	
-	
+	void SetOccupiedBlocks(int32 SpawnIndex, TWeakObjectPtr<ABattleShipBoard> BattleShipBoardPtr) override;
 	
 };

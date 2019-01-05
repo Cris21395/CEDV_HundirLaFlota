@@ -17,5 +17,5 @@ class PUZZLE_API ACruisserShip : public AShip
 public:
 	ACruisserShip();
 	
-	
+	void SetOccupiedBlocks(int32 SpawnIndex, TWeakObjectPtr<ABattleShipBoard> BattleShipBoardPtr) override;
 };
