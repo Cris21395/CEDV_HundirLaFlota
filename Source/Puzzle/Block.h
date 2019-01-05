@@ -30,10 +30,16 @@ public:
 	ABlock();
 
 	// Is it pressed?
-	bool bIsPressed;
+	UPROPERTY()
+		bool bIsPressed;
 
 	// Does it have a ship?
-	bool bHasShip;
+	UPROPERTY()
+		bool bHasShip;
+
+	// Index of Block
+	UPROPERTY()
+		int32 BlockIndex;
 
 	// Board that owns this block
 	UPROPERTY()

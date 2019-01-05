@@ -48,12 +48,12 @@ void ABattleShipBoard::BeginPlay()
 			// Tell the block about its owner
 			if (NewBlock != nullptr)
 			{
+				NewBlock->BlockIndex = Index;
 				NewBlock->bIsPressed = false;
 				NewBlock->OwningBoard = this;
 			}
 		}
 	}
-	//SpawnRandomShips();
 }
 
 // Called every frame
@@ -76,23 +76,10 @@ int32 ABattleShipBoard::CalculateIndex(int32 X, int32 Y)
 	return X + (Size * Y);
 }
 
-FVector ABattleShipBoard::CalculateLocation(int32 Index)
+FVector ABattleShipBoard::CalculateLocation(int32 BlockIndex)
 {
-	float X_Offset = (Index / Size) * BlockSpacing; // Divide by dimension
-	float Y_Offset = (Index % Size) * BlockSpacing; // Modulo gives remainder
+	float X_Offset = (BlockIndex / Size) * BlockSpacing; // Divide by dimension
+	float Y_Offset = (BlockIndex % Size) * BlockSpacing; // Modulo gives remainder
 
 	return FVector(X_Offset, Y_Offset, 0.0f);
 }
-
-/*
-void ABattleShipBoard::SpawnRandomShips()
-{
-	FVector location = CalculateLocation(0) + GetActorLocation();
-	//ABlock* NewBlock = GetWorld()->SpawnActor<ABlock>(location, FRotator(0.0f, 0.0f, 0.0f));
-	//TWeakObjectPtr<UMaterialInstanceDynamic> Material = NewBlock->GetBlockMesh()->CreateAndSetMaterialInstanceDynamic(0);
-	//Material->SetVectorParameterValue(FName(TEXT("Color")), FLinearColor(1.0f, 0.0f, 0.0f));
-	//NewBlock->GetBlockMesh()->SetRelativeScale3D(FVector(0.3f, 0.6f, 0.1f));
-	TWeakObjectPtr<AShip> NewShip = GetWorld()->SpawnActor<AShip>(location, FRotator(0.0f, 45.0f, 90.0f));
-	NewShip->GetShipMesh()->SetRelativeScale3D(FVector(50.0f, 50.0f, 50.0f));
-}
-*/

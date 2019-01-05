@@ -31,14 +31,8 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	// Number of ships to be spawned
-	UPROPERTY()
-		int NumberOfShips;
-
-	
 	// Array of ship classes
 	UPROPERTY()
-		//TArray<AShip> ShipClasses;
 		TArray<TSubclassOf<AShip>> ShipClasses;
 	
 	// Pointer to the board
@@ -47,5 +41,4 @@ private:
 
 	// Spawns the ship in a correct place
 	void SpawnRandomShip(TSubclassOf<AShip> ShipType);
-	
 };

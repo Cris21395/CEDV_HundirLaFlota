@@ -46,20 +46,18 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	// Calculate index from x,y coordinates
+	// Calculate Index from X, Y coordinates
 	int32 CalculateIndex(int32 X, int32 Y);
 
-public:
-	// Calculate location (position X, position Y) from x,y coordinates
-	FVector CalculateLocation(int32 Index);
+	// Calculate location (position X, position Y) from Index of Block
+	FVector CalculateLocation(int32 BlockIndex);
 
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Get a Block of the board giving an index
 	ABlock* GetBlockByIndex(int32 Index) const;
-
-	//void SpawnRandomShips();
 
 	// Returns DummyRoot subobject
 	FORCEINLINE class USceneComponent* GetDummyRoot() const { return DummyRoot.Get(); }
