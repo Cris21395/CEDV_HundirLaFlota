@@ -57,25 +57,30 @@ void AShipManager::SpawnRandomShip(TSubclassOf<AShip> ShipType)
 	// IsChildOf compares if Class == OtherClass or Class == Child of Other Class
 	if (ShipType->IsChildOf(ABoatShip::StaticClass())) {
 		// Spawn boat
+		Blocklocation += FVector(0.0f, 0.0f, 10.0f); // Offset due to the scale
 		TWeakObjectPtr<ABoatShip> NewShip = GetWorld()->SpawnActor<ABoatShip>(Blocklocation, FRotator(0.0f, 45.0f, 90.0f));
-		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(50.0f, 50.0f, 50.0f));
+		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(30.0f, 30.0f, 30.0f));
+		UE_LOG(LogTemp, Log, TEXT("--------[Boat] >> %d-----------\n\n\n"), RandomIndex);
 	}
 	else if (ShipType->IsChildOf(AVesselShip::StaticClass())) {
 		// Spawn Vessel
-		Blocklocation += FVector(60.0f , 0.0f, 100.0f); // Offset due to the scale
+		Blocklocation += FVector(30.0f , 0.0f, 40.0f); // Offset due to the scale
 		TWeakObjectPtr<AVesselShip> NewShip = GetWorld()->SpawnActor<AVesselShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
-		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(75.0f, 75.0f, 75.0f));
+		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(55.0f, 55.0f, 55.0f));
+		UE_LOG(LogTemp, Log, TEXT("--------[Vessel] >> %d-----------\n\n\n"), RandomIndex);
 	}
 	else if (ShipType->IsChildOf(ASubmarineShip::StaticClass())) {
 		// Spawn Submarine
-		Blocklocation += FVector(0.0f, 100.0f, 0.0f); // Offset due to the scale
+		Blocklocation += FVector(0.0f, 140.0f, 0.0f); // Offset due to the scale
 		TWeakObjectPtr<ASubmarineShip> NewShip = GetWorld()->SpawnActor<ASubmarineShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
-		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(30.0f, 30.0f, 30.0f));
+		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(20.0f, 20.0f, 20.0f));
+		UE_LOG(LogTemp, Log, TEXT("--------[Submarine] >> %d-----------\n\n\n"), RandomIndex);
 	}
 	else if(ShipType->IsChildOf(ACruisserShip::StaticClass())){
 		// Spawn Cruiser
-		Blocklocation += FVector(0.0f, 50.0f, 0.0f); // Offset due to the scale
+		Blocklocation += FVector(0.0f, 130.0f, 0.0f); // Offset due to the scale
 		TWeakObjectPtr<ACruisserShip> NewShip = GetWorld()->SpawnActor<ACruisserShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
-		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(12.0f, 12.0f, 12.0f));
+		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(7.0f, 7.0f, 7.0f));
+		UE_LOG(LogTemp, Log, TEXT("--------[Cruisser] >> %d-----------\n\n\n"), RandomIndex);
 	}
 }
