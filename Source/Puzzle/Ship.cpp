@@ -10,13 +10,13 @@ AShip::AShip()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	// Set default type
-	Type = EShipType::BOAT;
+	//Type = EShipType::BOAT;
 
 	// Set default mesh
-	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
-	ShipMesh->SetupAttachment(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMeshAsset(TEXT("StaticMesh'/Game/Geometry/ShipMeshes/Ship1/PUSHILIN_Kayak'"));
-	ShipMesh->SetStaticMesh(BaseMeshAsset.Object);
+	//ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
+	//ShipMesh->SetupAttachment(RootComponent);
+	//static ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMeshAsset(TEXT("StaticMesh'/Game/Geometry/ShipMeshes/Ship1/PUSHILIN_Kayak'"));
+	//ShipMesh->SetStaticMesh(BaseMeshAsset.Object);
 }
 
 void AShip::SetType(EShipType NewType)

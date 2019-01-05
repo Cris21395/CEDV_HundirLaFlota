@@ -2,6 +2,12 @@
 
 #pragma once
 
+#include "Ship.h"
+#include "BoatShip.h"
+#include "VesselShip.h"
+#include "SubmarineShip.h"
+#include "CruisserShip.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ShipManager.generated.h"
@@ -29,18 +35,17 @@ private:
 	UPROPERTY()
 		int NumberOfShips;
 
-	/*
+	
 	// Array of ship classes
 	UPROPERTY()
-		TArray<TSubclassOf<ABaseShip>> ShipClasses;
-	*/
-
+		//TArray<AShip> ShipClasses;
+		TArray<TSubclassOf<AShip>> ShipClasses;
+	
 	// Pointer to the board
 	UPROPERTY()
 		TWeakObjectPtr<ABattleShipBoard> BattleShipBoardPtr;
 
-	/*
 	// Spawns the ship in a correct place
-	void SpawnRandomShip(ABaseShip ShipType);
-	*/
+	void SpawnRandomShip(TSubclassOf<AShip> ShipType);
+	
 };

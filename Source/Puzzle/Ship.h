@@ -29,6 +29,7 @@ public:
 	EShipType Type;
 	TWeakObjectPtr<UStaticMeshComponent> ShipMesh;
 	int32 IndexOrigin;
+	int32 Size;
 	//TList<int32> OccupiedPositions;
 	FORCEINLINE class UStaticMeshComponent* GetShipMesh() const { return ShipMesh.Get(); }
 	

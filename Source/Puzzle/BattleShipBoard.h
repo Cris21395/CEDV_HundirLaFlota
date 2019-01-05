@@ -49,10 +49,10 @@ private:
 	// Calculate index from x,y coordinates
 	int32 CalculateIndex(int32 X, int32 Y);
 
+public:
 	// Calculate location (position X, position Y) from x,y coordinates
 	FVector CalculateLocation(int32 Index);
 
-public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

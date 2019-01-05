@@ -9,10 +9,11 @@
 AShipManager::AShipManager() : NumberOfShips(4)
 {	
 	// Store references to ships classes
-	// ShipClasses.AddUnique(::StaticClass());
-	// ShipClasses.AddUnique(::StaticClass());
-	// ShipClasses.AddUnique(::StaticClass());
-	// ShipClasses.AddUnique(::StaticClass());
+	ShipClasses.AddUnique(ACruisserShip::StaticClass());
+	ShipClasses.AddUnique(ASubmarineShip::StaticClass());
+	ShipClasses.AddUnique(AVesselShip::StaticClass());
+	ShipClasses.AddUnique(ABoatShip::StaticClass());
+	
 }
 
 // Called when the game starts or when spawned
@@ -34,15 +35,16 @@ void AShipManager::BeginPlay()
 	}
 
 	// Spawn ships
-	/* for (auto& TypeShip : ShipClasses) 
+	for (auto& TypeShip : ShipClasses) 
 	{
 		SpawnRandomShip(TypeShip);
-	}*/
+	}
 
 }
 
-/* void AShipManager::SpawnShip(ABaseShip ShipType)
+void AShipManager::SpawnRandomShip(TSubclassOf<AShip> ShipType)
 {
+	
 	int32 Size = BattleShipBoardPtr->Size;
 
 	// Get random index
@@ -51,19 +53,29 @@ void AShipManager::BeginPlay()
 	// Logic to spawn each ship
 	TWeakObjectPtr<ABlock> Block = BattleShipBoardPtr->GetBlockByIndex(RandomIndex);
 
-	switch (// Depending on the type of ship)
-	{
-	case // Type of ship:
-		// Spawn ship depending on the block it occupies
-		break;
-	case // Type of ship:
-		// Spawn ship depending on the block it occupies
-		break;
-	case // Type of ship:
-		// Spawn ship depending on the block it occupies
-		break;
-	case // Type of ship:
-		// Spawn ship depending on the block it occupies
-		break;
+	FVector location = BattleShipBoardPtr->CalculateLocation(RandomIndex) + BattleShipBoardPtr->GetActorLocation();
+
+	if (ShipType.Get() == ABoatShip::StaticClass()) {
+		// Spawn boat
+		TWeakObjectPtr<ABoatShip> NewShip = GetWorld()->SpawnActor<ABoatShip>(location, FRotator(0.0f, 45.0f, 90.0f));
+		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(50.0f, 50.0f, 50.0f));
 	}
-}*/
+	else if (ShipType.Get() == AVesselShip::StaticClass()) {
+		// Spawn Vessel
+		location += FVector(60.0f , 0.0f, 100.0f); // Offset due to the scale
+		TWeakObjectPtr<AVesselShip> NewShip = GetWorld()->SpawnActor<AVesselShip>(location, FRotator(0.0f, 0.0f, 90.0f));
+		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(75.0f, 75.0f, 75.0f));
+	}
+	else if (ShipType.Get() == ASubmarineShip::StaticClass()) {
+		// Spawn Submarine
+		location += FVector(0.0f, 100.0f, 0.0f); // Offset due to the scale
+		TWeakObjectPtr<ASubmarineShip> NewShip = GetWorld()->SpawnActor<ASubmarineShip>(location, FRotator(0.0f, 0.0f, 90.0f));
+		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(30.0f, 30.0f, 30.0f));
+	}
+	else if(ShipType.Get() == ACruisserShip::StaticClass()){
+		// Spawn Cruiser
+		location += FVector(0.0f, 50.0f, 0.0f); // Offset due to the scale
+		TWeakObjectPtr<ACruisserShip> NewShip = GetWorld()->SpawnActor<ACruisserShip>(location, FRotator(0.0f, 0.0f, 90.0f));
+		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(12.0f, 12.0f, 12.0f));
+	}
+}
