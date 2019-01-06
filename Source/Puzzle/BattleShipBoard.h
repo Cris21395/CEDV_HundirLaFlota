@@ -7,6 +7,7 @@
 #include "BattleShipBoard.generated.h"
 
 class ABlock;
+class AShip;
 
 /**
 * BattleShipBoard class is an actor to create a board and mantain 
@@ -37,9 +38,12 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Board")
 		FVector SizeOfBlock;
 	
-	// Array of indexes that have been selected
+	// Array of Ships in the board
 	UPROPERTY()
-		TArray<int32> SelectedIndexes;
+		TArray<TSubclassOf<AShip>> Ships;
+
+	// Check if all ships are destroyed
+	bool AreAllShipsDestroyed();
 
 protected:
 	// Called when the game starts or when spawned

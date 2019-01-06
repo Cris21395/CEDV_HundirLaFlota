@@ -39,6 +39,9 @@ void AShipManager::BeginPlay()
 		SpawnRandomShip(TypeShip);
 	}
 
+	// Move ship array to board. ShipClasses will be left empty
+	// This is made so that ships are not replicated
+	BattleShipBoardPtr->Ships = MoveTemp(ShipClasses);
 }
 
 void AShipManager::SpawnRandomShip(TSubclassOf<AShip> ShipType)

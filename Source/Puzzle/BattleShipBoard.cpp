@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BattleShipBoard.h"
+#include "Ship.h"
 #include "Block.h"
 #include "EngineMinimal.h"
 
@@ -18,6 +19,30 @@ ABattleShipBoard::ABattleShipBoard()
 	Size = 10;
 	BlockSpacing = 115.0f;
 	SizeOfBlock = FVector(0.3f, 0.3f, 0.1f);
+}
+
+bool ABattleShipBoard::AreAllShipsDestroyed()
+{
+	// Num of ships in the array
+	int NumElements = Ships.Num();
+
+	// Num of arrays that do not have positions in the board
+	int EmptyArrays = 0;
+
+	for (auto& TypeShip : Ships)
+	{
+		// If array OccupiedPositions is empty, 
+		// we increment the variable EmptyArrays
+		AShip* Ship = TypeShip.GetDefaultObject();
+		if (Ship->OccupiedPositions.Num() == 0)
+		{
+			EmptyArrays++;
+		}
+	}
+
+	// If both variable have the same number
+	// all ships have been destroyed
+	return EmptyArrays == NumElements;
 }
 
 // Called when the game starts or when spawned
