@@ -42,12 +42,20 @@ private:
 	// Spawns the ship in a correct place
 	void SpawnRandomShip(TSubclassOf<AShip> ShipType);
 
-	// Functions to check positions
+	////////////// Functions to check positions /////////////////
 	bool IsValidIndex(int32 IndexToCheck, TSubclassOf<AShip> ShipType);
 	int32 GetShipSize(TSubclassOf<AShip> ShipType);
-	bool CheckBoardBoundaries(int32 IndexToCheck, TSubclassOf<AShip> ShipType); // A ship cannot be placed out of the board
-	bool CheckCollisions(int32 IndexToCheck, TSubclassOf<AShip> ShipType);		// Two ships cannot ve in the same blocks
-	bool CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> ShipType);	// There must be atleast one block between ships
+
+	// A ship cannot be placed out of the board
+	bool CheckBoardBoundaries(int32 IndexToCheck, TSubclassOf<AShip> ShipType); 
 	
+	// Two ships cannot ve in the same blocks
+	bool CheckCollisions(int32 IndexToCheck, TSubclassOf<AShip> ShipType);
+	
+	// There must be atleast one block between ships
+	bool CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> ShipType);	
+	
+	//True if the indexed block if empty
+	bool IsEmptyBlock(int32 IndexToCheck); 
 
 };

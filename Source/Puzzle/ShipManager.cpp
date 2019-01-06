@@ -49,8 +49,8 @@ void AShipManager::SpawnRandomShip(TSubclassOf<AShip> ShipType)
 	int32 Size = BattleShipBoardPtr->Size;
 
 	// Get random index
-	//int32 RandomIndex = FMath::Rand() % (Size * Size);
-	int32 RandomIndex = 6;
+	int32 RandomIndex = FMath::Rand() % (Size * Size);
+	//int32 RandomIndex = 6;
 	while (!IsValidIndex(RandomIndex, ShipType)) {	// Get different index when it is not valid
 		UE_LOG(LogTemp, Log, TEXT("nnnnnnnnnnnnnnnnnnnnnnnnREPEAT! %d\n\n\n"), RandomIndex);
 		RandomIndex = FMath::Rand() % (Size * Size);	
@@ -100,7 +100,6 @@ void AShipManager::SpawnRandomShip(TSubclassOf<AShip> ShipType)
 
 bool AShipManager::IsValidIndex(int32 IndexToCheck, TSubclassOf<AShip> ShipType)
 {
-	//int32 Size = GetShipSize(ShipType);
 	if (CheckBoardBoundaries(IndexToCheck, ShipType) &&
 		CheckCollisions(IndexToCheck, ShipType) &&
 		CheckShipBoundaries(IndexToCheck, ShipType))
@@ -160,5 +159,133 @@ bool AShipManager::CheckCollisions(int32 IndexToCheck, TSubclassOf<AShip> ShipTy
 
 bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> ShipType)
 {
+	int32 ShipSize = GetShipSize(ShipType);
+	int32 BoardSize = BattleShipBoardPtr->Size;
+
+	// Used in the diagonal check
+	bool left, right, top, bottom = false;
+
+	// Vertical Ships Checks
+	if (ShipType->IsChildOf(AVesselShip::StaticClass())) {
+		// There are left boxes
+		if (IndexToCheck % BoardSize != 0) {
+			left = true;
+			// If there is a Ship in any of the left
+			for (int i = 0; i < ShipSize; i++) {
+				if (!IsEmptyBlock(IndexToCheck + BoardSize * i - 1))
+					return false;
+			}
+		}
+
+		// There are bottom boxes
+		if (BoardSize < IndexToCheck) {
+			bottom = true;
+			// If there is a ship in the bottom
+				if (!IsEmptyBlock(IndexToCheck - BoardSize))
+					return false;
+		}
+
+		// There are right boxes
+		if (IndexToCheck % BoardSize != 0 || IndexToCheck == 0) {
+			right = true;
+			// If there is a ship in the right
+			for (int i = 0; i < ShipSize; i++) {
+				if (!IsEmptyBlock(IndexToCheck + BoardSize * i + 1))
+					return false;
+			}
+		}
+
+		// There are top boxes
+		if ((IndexToCheck + BoardSize*ShipSize) < BoardSize*BoardSize) {
+			top = true;
+			// If there is a ship in any of the top 
+				if (!IsEmptyBlock(IndexToCheck + BoardSize * ShipSize))
+					return false;
+		}
+
+		// Corners Checks
+		if (top && left)
+			if (!IsEmptyBlock(IndexToCheck + BoardSize * ShipSize - 1))
+				return false;
+		if (top && right)
+			if (!IsEmptyBlock(IndexToCheck + BoardSize * ShipSize + 1))
+				return false;
+		if (bottom && left)
+			if (!IsEmptyBlock(IndexToCheck - BoardSize - 1))
+				return false;
+		if (bottom && right)
+			if (!IsEmptyBlock(IndexToCheck - BoardSize + 1))
+				return false;
+	}
+	//////////////// Horizontal Ships Checks /////////////////
+	else{
+		// There are left boxes
+		if (IndexToCheck % BoardSize != 0) {
+			left = true;
+			// If there is a Ship on the left
+			if (!IsEmptyBlock(IndexToCheck - 1))
+				return false;
+		}
+
+		// There are bottom boxes
+		if (BoardSize < IndexToCheck) {
+			bottom = true;
+			// If there is a ship in any box of the bottom
+			for (int i = 0; i < ShipSize; i++) {
+				if (!IsEmptyBlock(IndexToCheck - BoardSize + i))
+					return false;
+			}
+		}
+
+		// There are right boxes
+		if ((IndexToCheck + ShipSize) % BoardSize != 0 || IndexToCheck == 0) {
+			right = true;
+			// If there is a ship in the right
+			if (!IsEmptyBlock(IndexToCheck + ShipSize))
+				return false;
+		}
+
+		// There are top boxes
+		if (BoardSize*(BoardSize - 1) > IndexToCheck) {
+			top = true;
+			// If there is a ship in any of the top 
+			for (int i = 0; i < ShipSize; i++) {
+				if (!IsEmptyBlock(IndexToCheck + BoardSize * i))
+					return false;
+			}
+		}
+
+		// Corners checks
+		if (top && left)
+			if (!IsEmptyBlock(IndexToCheck + BoardSize - 1))
+				return false;
+		if (top && right)
+			if (!IsEmptyBlock(IndexToCheck + BoardSize + ShipSize))
+				return false;
+		if (bottom && left)
+			if (!IsEmptyBlock(IndexToCheck - BoardSize - 1))
+				return false;
+		if (bottom && right)
+			if (!IsEmptyBlock(IndexToCheck - BoardSize + ShipSize))
+				return false;
+
+	}
+
+
+	return true;
+}
+
+bool AShipManager::IsEmptyBlock(int32 IndexToCheck)
+{
+	if (IndexToCheck >= 0 && IndexToCheck < 100) {
+		TWeakObjectPtr<ABlock> Block = BattleShipBoardPtr->GetBlockByIndex(IndexToCheck);
+		if (Block->bHasShip)
+			return false;
+	}
+	else {
+		UE_LOG(LogTemp, Log, TEXT("%%%%%%%%%%%%[EXCEPTION ] >> %d %%%%%%%%%%%%%\n\n\n"), IndexToCheck);
+		return false;
+	}
+
 	return true;
 }
