@@ -20,6 +20,5 @@ public:
 	void SetOccupiedBlocks(int32 SpawnIndex, ABattleShipBoard* BattleShipBoardPtr) override;
 
 private:
-	UFUNCTION()
-		void DereferenceBlock(ABlock* Block) override;
+	void DereferenceBlock(ABlock* Block) override;
 };

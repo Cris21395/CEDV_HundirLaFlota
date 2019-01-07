@@ -25,6 +25,8 @@ void ABoatShip::DereferenceBlock(ABlock* Block)
 		{
 			// Remove this position in the array
 			OccupiedPositions.Remove(Index);
+
+			break;
 		}
 	}
 }
@@ -38,7 +40,7 @@ void ABoatShip::SetOccupiedBlocks(int32 SpawnIndex, ABattleShipBoard* BattleShip
 	ABlock* Block = BattleShipBoardPtr->GetBlockByIndex(SpawnIndex);
 
 	// Bind the delegate to DereferenceBlock function
-	Block->DereferenceBlockDelegate.BindDynamic(this, &ABoatShip::DereferenceBlock);
+	Block->DereferenceBlockDelegate.BindUObject(this, &ABoatShip::DereferenceBlock);
 
 	// Mark the block so that it is known that holds a ship
 	Block->bHasShip = true;

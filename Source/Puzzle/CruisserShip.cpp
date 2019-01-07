@@ -42,7 +42,7 @@ void ACruisserShip::SetOccupiedBlocks(int32 SpawnIndex, ABattleShipBoard* Battle
 		ABlock* Block = BattleShipBoardPtr->GetBlockByIndex(SpawnIndex + i);
 
 		// Bind the delegate to DereferenceBlock function
-		Block->DereferenceBlockDelegate.BindDynamic(this, &ACruisserShip::DereferenceBlock);
+		Block->DereferenceBlockDelegate.BindUObject(this, &ACruisserShip::DereferenceBlock);
 
 		// Mark the block so that it is known that holds a ship
 		Block->bHasShip = true;
