@@ -19,22 +19,27 @@ class PUZZLE_API AShip : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AShip();
-	void SetType(EShipType NewType);
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+
+	// Size of ship
+	UPROPERTY()
+		int32 Size;
+
+	// Pointer to static mesh
+	UPROPERTY()
+		TWeakObjectPtr<UStaticMeshComponent> ShipMesh;
+
+	// Array of occupied positions (index of blocks)
+	UPROPERTY()
+		TArray<int32> OccupiedPositions;
+
+private:
+	// Override in children to dereference the block which holds a ship
+	virtual void DereferenceBlock(ABlock* Block) PURE_VIRTUAL(AShip::DereferenceBlock, );
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	EShipType Type;
-	TWeakObjectPtr<UStaticMeshComponent> ShipMesh;
-	int32 IndexOrigin;
-	int32 Size;
-	TArray<int32> OccupiedPositions;
-	FORCEINLINE class UStaticMeshComponent* GetShipMesh() const { return ShipMesh.Get(); }
-	
 	// Override in children to set occupied blocks for each ship type
-	virtual void SetOccupiedBlocks(int32 SpawnIndex, TWeakObjectPtr<ABattleShipBoard> BattleShipBoardPtr) PURE_VIRTUAL(AShip::SetOccupiedBlocks, );
+	virtual void SetOccupiedBlocks(int32 SpawnIndex, ABattleShipBoard* BattleShipBoardPtr) PURE_VIRTUAL(AShip::SetOccupiedBlocks, );
+
+	// Returns ShipMesh subobject
+	FORCEINLINE class UStaticMeshComponent* GetShipMesh() const { return ShipMesh.Get(); }
 };

@@ -2,7 +2,6 @@
 
 #include "SubmarineShip.h"
 
-
 ASubmarineShip::ASubmarineShip()
 {
 	//Set Mesh
@@ -15,11 +14,37 @@ ASubmarineShip::ASubmarineShip()
 	Size = 3;
 }
 
-void ASubmarineShip::SetOccupiedBlocks(int32 SpawnIndex, TWeakObjectPtr<ABattleShipBoard> BattleShipBoardPtr)
+void ASubmarineShip::DereferenceBlock(ABlock* Block)
 {
-	for (int i = 0; i < Size; i++) {
+	int32 BlockIndex = Block->BlockIndex;
+
+	for (int i = 0; i < Size; i++)
+	{
+		int32 Index = OccupiedPositions[i];
+		if (Index == BlockIndex)
+		{
+			// Remove this position in the array
+			OccupiedPositions.Remove(Index);
+
+			break;
+		}
+	}
+}
+
+void ASubmarineShip::SetOccupiedBlocks(int32 SpawnIndex, ABattleShipBoard* BattleShipBoardPtr)
+{
+	for (int i = 0; i < Size; i++) 
+	{
+		// Mark occupied position of the ship in the board
 		OccupiedPositions.Add(SpawnIndex + i);
-		TWeakObjectPtr<ABlock> Block = BattleShipBoardPtr->GetBlockByIndex(SpawnIndex + i);
+
+		// Get the block that holds this ship
+		ABlock* Block = BattleShipBoardPtr->GetBlockByIndex(SpawnIndex + i);
+
+		// Bind the delegate to DereferenceBlock function
+		Block->DereferenceBlockDelegate.BindDynamic(this, &ASubmarineShip::DereferenceBlock);
+
+		// Mark the block so that it is known that holds a ship
 		Block->bHasShip = true;
 	}
 }

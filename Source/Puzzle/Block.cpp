@@ -94,6 +94,9 @@ void ABlock::HandleClicked()
 			// Fire explosion particle system
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticleSystem.Get(), GetActorLocation());
 
+			// Call delegate if it is bound
+			DereferenceBlockDelegate.ExecuteIfBound(this);
+
 			bHasShip = false;
 		}
 	}

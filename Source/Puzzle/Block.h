@@ -10,6 +10,8 @@
 
 class ABattleShipBoard;
 
+DECLARE_DYNAMIC_DELEGATE_OneParam(FBlockDelegate, ABlock*, Block);
+
 /**
 * Block class used to create a board and be clickable
 */
@@ -44,6 +46,10 @@ public:
 	// Board that owns this block
 	UPROPERTY()
 		TWeakObjectPtr<ABattleShipBoard> OwningBoard;
+
+	// Delegate to dereference block when a ship has been hit
+	UPROPERTY()
+		FBlockDelegate DereferenceBlockDelegate;
 
 private:
 	// Pointer to white material used on the focused block

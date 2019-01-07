@@ -62,7 +62,7 @@ void ABattleShipBoard::BeginPlay()
 			const FVector location = CalculateLocation(Index) + GetActorLocation();
 
 			// Spawn block
-			TWeakObjectPtr<ABlock> NewBlock = GetWorld()->SpawnActor<ABlock>(location, FRotator(0.0f, 0.0f, 0.0f));
+			ABlock* NewBlock = GetWorld()->SpawnActor<ABlock>(location, FRotator(0.0f, 0.0f, 0.0f));
 
 			// Modify its scale
 			NewBlock->GetBlockMesh()->SetRelativeScale3D(SizeOfBlock);

@@ -18,5 +18,9 @@ class PUZZLE_API ABoatShip : public AShip
 public:
 	ABoatShip();
 
-	void SetOccupiedBlocks(int32 SpawnIndex, TWeakObjectPtr<ABattleShipBoard> BattleShipBoardPtr) override;
+	void SetOccupiedBlocks(int32 SpawnIndex, ABattleShipBoard* BattleShipBoardPtr) override;
+
+private:
+	UFUNCTION()
+		void DereferenceBlock(ABlock* Block) override;
 };

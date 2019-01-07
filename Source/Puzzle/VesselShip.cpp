@@ -15,11 +15,37 @@ AVesselShip::AVesselShip()
 	Size = 2;
 }
 
-void AVesselShip::SetOccupiedBlocks(int32 SpawnIndex, TWeakObjectPtr<ABattleShipBoard> BattleShipBoardPtr)
+void AVesselShip::DereferenceBlock(ABlock* Block)
 {
-	for (int i = 0; i < Size; i++) {
+	int32 BlockIndex = Block->BlockIndex;
+
+	for (int i = 0; i < Size; i++)
+	{
+		int32 Index = OccupiedPositions[i];
+		if (Index == BlockIndex)
+		{
+			// Remove this position in the array
+			OccupiedPositions.Remove(Index);
+
+			break;
+		}
+	}
+}
+
+void AVesselShip::SetOccupiedBlocks(int32 SpawnIndex, ABattleShipBoard* BattleShipBoardPtr)
+{
+	for (int i = 0; i < Size; i++) 
+	{
+		// Mark occupied position of the ship in the board
 		OccupiedPositions.Add(SpawnIndex + BattleShipBoardPtr->Size*i);
-		TWeakObjectPtr<ABlock> Block = BattleShipBoardPtr->GetBlockByIndex(SpawnIndex + BattleShipBoardPtr->Size*i);
+
+		// Get the block that holds this ship
+		ABlock* Block = BattleShipBoardPtr->GetBlockByIndex(SpawnIndex + BattleShipBoardPtr->Size*i);
+
+		// Bind the delegate to DereferenceBlock function
+		Block->DereferenceBlockDelegate.BindDynamic(this, &AVesselShip::DereferenceBlock);
+
+		// Mark the block so that it is known that holds a ship
 		Block->bHasShip = true;
 	}
 }

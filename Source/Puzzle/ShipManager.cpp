@@ -57,7 +57,7 @@ void AShipManager::SpawnRandomShip(TSubclassOf<AShip> ShipType)
 	}
 
 	// Logic to spawn each ship
-	TWeakObjectPtr<ABlock> Block = BattleShipBoardPtr->GetBlockByIndex(RandomIndex);
+	ABlock* Block = BattleShipBoardPtr->GetBlockByIndex(RandomIndex);
 
 	// Location of Block
 	FVector Blocklocation = Block->GetActorLocation();
@@ -66,34 +66,34 @@ void AShipManager::SpawnRandomShip(TSubclassOf<AShip> ShipType)
 	if (ShipType->IsChildOf(ABoatShip::StaticClass())) {
 		// Spawn boat
 		Blocklocation += FVector(0.0f, 0.0f, 10.0f); // Offset due to the scale
-		TWeakObjectPtr<ABoatShip> NewShip = GetWorld()->SpawnActor<ABoatShip>(Blocklocation, FRotator(0.0f, 45.0f, 90.0f));
+		ABoatShip* NewShip = GetWorld()->SpawnActor<ABoatShip>(Blocklocation, FRotator(0.0f, 45.0f, 90.0f));
 		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(30.0f, 30.0f, 30.0f));
 		UE_LOG(LogTemp, Log, TEXT("--------[Boat] >> %d-----------\n\n\n"), RandomIndex);
-		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr);
+		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr.Get());
 	}
 	else if (ShipType->IsChildOf(AVesselShip::StaticClass())) {
 		// Spawn Vessel
 		Blocklocation += FVector(30.0f , 0.0f, 40.0f); // Offset due to the scale
-		TWeakObjectPtr<AVesselShip> NewShip = GetWorld()->SpawnActor<AVesselShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
+		AVesselShip* NewShip = GetWorld()->SpawnActor<AVesselShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
 		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(55.0f, 55.0f, 55.0f));
 		UE_LOG(LogTemp, Log, TEXT("--------[Vessel] >> %d-----------\n\n\n"), RandomIndex);
-		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr);
+		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr.Get());
 	}
 	else if (ShipType->IsChildOf(ASubmarineShip::StaticClass())) {
 		// Spawn Submarine
 		Blocklocation += FVector(0.0f, 140.0f, 0.0f); // Offset due to the scale
-		TWeakObjectPtr<ASubmarineShip> NewShip = GetWorld()->SpawnActor<ASubmarineShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
+		ASubmarineShip* NewShip = GetWorld()->SpawnActor<ASubmarineShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
 		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(20.0f, 20.0f, 20.0f));
 		UE_LOG(LogTemp, Log, TEXT("--------[Submarine] >> %d-----------\n\n\n"), RandomIndex);
-		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr);
+		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr.Get());
 	}
 	else if(ShipType->IsChildOf(ACruisserShip::StaticClass())){
 		// Spawn Cruiser
 		Blocklocation += FVector(0.0f, 130.0f, 0.0f); // Offset due to the scale
-		TWeakObjectPtr<ACruisserShip> NewShip = GetWorld()->SpawnActor<ACruisserShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
+		ACruisserShip* NewShip = GetWorld()->SpawnActor<ACruisserShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
 		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(7.0f, 7.0f, 7.0f));
 		UE_LOG(LogTemp, Log, TEXT("--------[Cruisser] >> %d-----------\n\n\n"), RandomIndex);
-		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr);
+		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr.Get());
 	}
 	
 }
@@ -278,7 +278,7 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> Sh
 bool AShipManager::IsEmptyBlock(int32 IndexToCheck)
 {
 	if (IndexToCheck >= 0 && IndexToCheck < 100) {
-		TWeakObjectPtr<ABlock> Block = BattleShipBoardPtr->GetBlockByIndex(IndexToCheck);
+		ABlock* Block = BattleShipBoardPtr->GetBlockByIndex(IndexToCheck);
 		if (Block->bHasShip)
 			return false;
 	}
