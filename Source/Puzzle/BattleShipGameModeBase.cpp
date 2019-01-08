@@ -6,6 +6,7 @@
 
 ABattleShipGameModeBase::ABattleShipGameModeBase() : MaxNumberPlayers(2)
 {
+	DefaultPawnClass = nullptr;
 	PlayerControllerClass = ABattleShipPlayerController::StaticClass();
 	GameStateClass = ABattleShipGameStateBase::StaticClass();
 }

@@ -42,15 +42,18 @@ ABlock::ABlock()
 	BlockMesh->SetMaterial(0, ConstructorStatics.Transparency_Blue_Material.Get());
 	BlockMesh->SetupAttachment(DummyRoot.Get());
 
-	// Register events
-	BlockMesh->OnClicked.AddDynamic(this, &ABlock::BlockClicked);
-	BlockMesh->OnBeginCursorOver.AddDynamic(this, &ABlock::BlockBeginMouseOver);
-	BlockMesh->OnEndCursorOver.AddDynamic(this, &ABlock::BlockEndMouseOver);
-
 	// Save a pointer to these materials
 	Transparency_Material = ConstructorStatics.Transparency_Material.Get();
 	Transparency_Blue_Material = ConstructorStatics.Transparency_Blue_Material.Get();
 	Transparency_Yellow_Material = ConstructorStatics.Transparency_Yellow_Material.Get();
+}
+
+void ABlock::ReceiveInputFromMouse()
+{
+	// Register events
+	BlockMesh->OnClicked.AddDynamic(this, &ABlock::BlockClicked);
+	BlockMesh->OnBeginCursorOver.AddDynamic(this, &ABlock::BlockBeginMouseOver);
+	BlockMesh->OnEndCursorOver.AddDynamic(this, &ABlock::BlockEndMouseOver);
 }
 
 void ABlock::BlockClicked(UPrimitiveComponent* ClickedComp, FKey ButtonClicked)
@@ -66,14 +69,6 @@ void ABlock::BlockBeginMouseOver(UPrimitiveComponent * MouseOverComp)
 void ABlock::BlockEndMouseOver(UPrimitiveComponent * MouseOverComp)
 {
 	Highlight(false);
-}
-
-void ABlock::ReceiveInputFromMouse()
-{
-	// Register events
-	BlockMesh->OnClicked.AddDynamic(this, &ABlock::BlockClicked);
-	BlockMesh->OnBeginCursorOver.AddDynamic(this, &ABlock::BlockBeginMouseOver);
-	BlockMesh->OnEndCursorOver.AddDynamic(this, &ABlock::BlockEndMouseOver);
 }
 
 void ABlock::HandleClicked()

@@ -37,6 +37,10 @@ public:
 	// Size of each block of the board
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Board")
 		FVector SizeOfBlock;
+
+	// Determine if board can be clickable
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Board")
+		bool bIsBoardClickable;
 	
 	// Array of Ships in the board
 	UPROPERTY()
@@ -57,9 +61,6 @@ private:
 	FVector CalculateLocation(int32 BlockIndex);
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	// Get a Block of the board giving an index
 	ABlock* GetBlockByIndex(int32 Index) const;
 

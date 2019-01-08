@@ -50,10 +50,10 @@ public:
 	// Delegate to dereference block when a ship has been hit
 	FBlockDelegate DereferenceBlockDelegate;
 
-	void HandleClicked();
-
 	// Enable input from mouse
 	void ReceiveInputFromMouse();
+
+	void HandleClicked();
 
 private:
 	// Pointer to white material used on the focused block
