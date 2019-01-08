@@ -2,14 +2,13 @@
 
 #include "VesselShip.h"
 
-
 AVesselShip::AVesselShip()
 {
 	// Set Mesh
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
 	ShipMesh->SetupAttachment(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMeshAsset(TEXT("StaticMesh'/Game/Geometry/ShipMeshes/Ship2/model'"));
-	ShipMesh->SetStaticMesh(BaseMeshAsset.Object);
+	ShipMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>
+		(TEXT("StaticMesh'/Game/Geometry/ShipMeshes/Ship2/model'")).Object);
 
 	// Set Size
 	Size = 2;
@@ -17,6 +16,9 @@ AVesselShip::AVesselShip()
 
 void AVesselShip::DereferenceBlock(ABlock* Block)
 {
+	// Fire explosion
+	FireExplosionIfItIsHit(Block);
+
 	int32 BlockIndex = Block->BlockIndex;
 
 	for (int i = 0; i < Size; i++)

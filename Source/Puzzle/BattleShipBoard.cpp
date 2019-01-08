@@ -59,7 +59,7 @@ void ABattleShipBoard::BeginPlay()
 			int32 Index = CalculateIndex(X_Index, Y_Index);
 
 			// Make position vector
-			const FVector location = CalculateLocation(Index) + GetActorLocation();
+			FVector location = CalculateLocation(Index) + GetActorLocation();
 
 			// Spawn block
 			ABlock* NewBlock = GetWorld()->SpawnActor<ABlock>(location, FRotator(0.0f, 0.0f, 0.0f));
@@ -74,7 +74,7 @@ void ABattleShipBoard::BeginPlay()
 			if (NewBlock != nullptr)
 			{
 				NewBlock->BlockIndex = Index;
-				NewBlock->bIsPressed = false;
+				NewBlock->bIsActive = false;
 				NewBlock->OwningBoard = this;
 			}
 		}

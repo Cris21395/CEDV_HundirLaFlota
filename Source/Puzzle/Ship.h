@@ -2,9 +2,8 @@
 
 #pragma once
 
-#include "ShipType.h"
-#include "BattleShipBoard.h"
 #include "Block.h"
+#include "BattleShipBoard.h"
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "CoreMinimal.h"
@@ -32,7 +31,19 @@ public:
 	UPROPERTY()
 		TArray<int32> OccupiedPositions;
 
+protected:
+	// Execute the explosion when a ship has been hit
+	void FireExplosionIfItIsHit(ABlock* Block);
+
 private:
+	// Pointer to explosion used to be fired when a ship has been hit
+	UPROPERTY()
+		TWeakObjectPtr<UParticleSystem> ExplosionParticleSystem;
+
+	// Pointer to audio explosion used to be played along ExplosionParticleSystem
+	UPROPERTY()
+		TWeakObjectPtr<USoundBase> AudioExplosion;
+
 	// Override in children to dereference the block which holds a ship
 	virtual void DereferenceBlock(ABlock* Block) PURE_VIRTUAL(AShip::DereferenceBlock, );
 

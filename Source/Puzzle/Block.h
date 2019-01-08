@@ -31,9 +31,9 @@ class PUZZLE_API ABlock : public AActor
 public:
 	ABlock();
 
-	// Is it pressed?
+	// Is it active?
 	UPROPERTY()
-		bool bIsPressed;
+		bool bIsActive;
 
 	// Does it have a ship?
 	UPROPERTY()
@@ -50,6 +50,11 @@ public:
 	// Delegate to dereference block when a ship has been hit
 	FBlockDelegate DereferenceBlockDelegate;
 
+	void HandleClicked();
+
+	// Enable input from mouse
+	void ReceiveInputFromMouse();
+
 private:
 	// Pointer to white material used on the focused block
 	UPROPERTY()
@@ -63,14 +68,6 @@ private:
 	UPROPERTY()
 		TWeakObjectPtr<UMaterialInstance> Transparency_Yellow_Material;
 
-	// Pointer to explosion used to be fired when a ship holded by this block has been hit
-	UPROPERTY()
-		TWeakObjectPtr<UParticleSystem> ExplosionParticleSystem;
-
-	// Pointer to audio explosion used to be played along ExplosionParticleSystem
-	UPROPERTY()
-		TWeakObjectPtr<USoundBase> AudioExplosion;
-
 	// Handle the block being clicked
 	UFUNCTION()
 		void BlockClicked(UPrimitiveComponent* ClickedComp, FKey ButtonClicked);
@@ -82,8 +79,6 @@ private:
 	// Handle the block when cursor ends to be over it
 	UFUNCTION()
 		void BlockEndMouseOver(UPrimitiveComponent* MouseOverComp);
-
-		void HandleClicked();
 
 		void Highlight(bool bOn);
 

@@ -7,8 +7,8 @@ ASubmarineShip::ASubmarineShip()
 	//Set Mesh
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
 	ShipMesh->SetupAttachment(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMeshAsset(TEXT("StaticMesh'/Game/Geometry/ShipMeshes/Ship3/submarine'"));
-	ShipMesh->SetStaticMesh(BaseMeshAsset.Object);
+	ShipMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>
+		(TEXT("StaticMesh'/Game/Geometry/ShipMeshes/Ship3/submarine'")).Object);
 
 	//Set Size
 	Size = 3;
@@ -16,6 +16,9 @@ ASubmarineShip::ASubmarineShip()
 
 void ASubmarineShip::DereferenceBlock(ABlock* Block)
 {
+	// Fire explosion
+	FireExplosionIfItIsHit(Block);
+
 	int32 BlockIndex = Block->BlockIndex;
 
 	for (int i = 0; i < Size; i++)

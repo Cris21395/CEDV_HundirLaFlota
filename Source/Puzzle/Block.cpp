@@ -2,7 +2,6 @@
 
 #include "Block.h"
 #include "BattleShipBoard.h"
-#include "EngineMinimal.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
@@ -52,12 +51,6 @@ ABlock::ABlock()
 	Transparency_Material = ConstructorStatics.Transparency_Material.Get();
 	Transparency_Blue_Material = ConstructorStatics.Transparency_Blue_Material.Get();
 	Transparency_Yellow_Material = ConstructorStatics.Transparency_Yellow_Material.Get();
-
-	// Save pointer to audio explosion
-	AudioExplosion = ConstructorStatics.AudioExplosion.Get();
-
-	// Save a pointer to explosion
-	ExplosionParticleSystem = ConstructorStatics.ExplosionParticleSystem.Get();
 }
 
 void ABlock::BlockClicked(UPrimitiveComponent* ClickedComp, FKey ButtonClicked)
@@ -75,12 +68,20 @@ void ABlock::BlockEndMouseOver(UPrimitiveComponent * MouseOverComp)
 	Highlight(false);
 }
 
+void ABlock::ReceiveInputFromMouse()
+{
+	// Register events
+	BlockMesh->OnClicked.AddDynamic(this, &ABlock::BlockClicked);
+	BlockMesh->OnBeginCursorOver.AddDynamic(this, &ABlock::BlockBeginMouseOver);
+	BlockMesh->OnEndCursorOver.AddDynamic(this, &ABlock::BlockEndMouseOver);
+}
+
 void ABlock::HandleClicked()
 {
 	// Check we are not already active
-	if (!bIsPressed)
+	if (!bIsActive)
 	{
-		bIsPressed = true;
+		bIsActive = true;
 
 		// Change material
 		BlockMesh->SetMaterial(0, Transparency_Material.Get());
@@ -88,12 +89,6 @@ void ABlock::HandleClicked()
 		// If block has a ship, we fire a explosion
 		if (bHasShip)
 		{
-			// Play audio explosion
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), AudioExplosion.Get(), GetActorLocation());
-
-			// Fire explosion particle system
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticleSystem.Get(), GetActorLocation());
-
 			// Call delegate if it is bound
 			DereferenceBlockDelegate.ExecuteIfBound(this);
 
@@ -105,7 +100,7 @@ void ABlock::HandleClicked()
 void ABlock::Highlight(bool bOn)
 {
 	// Do not highlight if the block has already been activated.
-	if (bIsPressed)
+	if (bIsActive)
 	{
 		return;
 	}

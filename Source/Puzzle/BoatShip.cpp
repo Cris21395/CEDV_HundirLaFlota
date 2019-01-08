@@ -7,8 +7,8 @@ ABoatShip::ABoatShip()
 	// Set Mesh
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
 	ShipMesh->SetupAttachment(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMeshAsset(TEXT("StaticMesh'/Game/Geometry/ShipMeshes/Ship1/PUSHILIN_Kayak'"));
-	ShipMesh->SetStaticMesh(BaseMeshAsset.Object);
+	ShipMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>
+		(TEXT("StaticMesh'/Game/Geometry/ShipMeshes/Ship1/PUSHILIN_Kayak'")).Object);
 
 	// Set Size
 	Size = 1;
@@ -16,6 +16,9 @@ ABoatShip::ABoatShip()
 
 void ABoatShip::DereferenceBlock(ABlock* Block)
 {
+	// Fire explosion
+	FireExplosionIfItIsHit(Block);
+
 	int32 BlockIndex = Block->BlockIndex;
 
 	for (int i = 0; i < Size; i++)
