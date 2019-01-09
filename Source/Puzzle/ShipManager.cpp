@@ -21,6 +21,7 @@ void AShipManager::BeginPlay()
 	Super::BeginPlay();
 	
 	FString BattleBoardPlayerString = FString(TEXT("BattleShipBoardPlayer"));
+	FString BattleBoardMachineString = FString(TEXT("BattleShipBoardMachine"));
 
 	// Get a reference of board to spawn ships
 	for (TActorIterator<ABattleShipBoard> ActorItr(GetWorld()); ActorItr; ++ActorItr)
@@ -33,20 +34,41 @@ void AShipManager::BeginPlay()
 		}
 	}
 
-	// Spawn ships
+	
+	// Spawn ships for machine
 	for (auto& TypeShip : ShipClasses) 
 	{
-		SpawnRandomShip(TypeShip);
+		SpawnRandomShip(TypeShip, true);
 	}
+
+	//////////////////////TMP///////////////////////
+	for (TActorIterator<ABattleShipBoard> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		if (BattleBoardMachineString.Equals(ActorItr->GetName()))
+		{
+			// Conversion to smart pointer
+			BattleShipBoardPtr = *ActorItr;
+			break;
+		}
+	}
+
+	// Spawn ships for player
+	for (auto& TypeShip : ShipClasses)
+	{
+		SpawnRandomShip(TypeShip, false);
+	}
+	/////////////////////////////////////////////////////
 
 	// Move ship array to board. ShipClasses will be left empty
 	// This is made so that ships are not replicated
 	BattleShipBoardPtr->Ships = MoveTemp(ShipClasses);
 }
 
-void AShipManager::SpawnRandomShip(TSubclassOf<AShip> ShipType)
+void AShipManager::SpawnRandomShip(TSubclassOf<AShip> ShipType, bool MustSpawn)
 {
 	int32 Size = BattleShipBoardPtr->Size;
+	int32 BlockSpacing = BattleShipBoardPtr->BlockSpacing;
+	FVector BlockSize = BattleShipBoardPtr->SizeOfBlock;
 
 	// Get random index
 	int32 RandomIndex = FMath::Rand() % (Size * Size);
@@ -67,33 +89,42 @@ void AShipManager::SpawnRandomShip(TSubclassOf<AShip> ShipType)
 		// Spawn boat
 		Blocklocation += FVector(0.0f, 0.0f, 10.0f); // Offset due to the scale
 		ABoatShip* NewShip = GetWorld()->SpawnActor<ABoatShip>(Blocklocation, FRotator(0.0f, 45.0f, 90.0f));
-		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(30.0f, 30.0f, 30.0f));
+		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f) * (BlockSize.X*100 + 10));
 		UE_LOG(LogTemp, Log, TEXT("--------[Boat] >> %d-----------\n\n\n"), RandomIndex);
 		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr.Get());
+		if (!MustSpawn)
+			NewShip->SetActorHiddenInGame(true);
 	}
 	else if (ShipType->IsChildOf(AVesselShip::StaticClass())) {
 		// Spawn Vessel
-		Blocklocation += FVector(30.0f , 0.0f, 40.0f); // Offset due to the scale
+		Blocklocation += FVector(30.0f, 0.0f, 40.0f); // Offset due to the scale
 		AVesselShip* NewShip = GetWorld()->SpawnActor<AVesselShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
-		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(55.0f, 55.0f, 55.0f));
+
+		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f) * (BlockSize.X * 100 + BlockSpacing*(BlockSize.X+0.1f)));
 		UE_LOG(LogTemp, Log, TEXT("--------[Vessel] >> %d-----------\n\n\n"), RandomIndex);
 		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr.Get());
+		if (!MustSpawn)
+			NewShip->SetActorHiddenInGame(true);
 	}
 	else if (ShipType->IsChildOf(ASubmarineShip::StaticClass())) {
 		// Spawn Submarine
-		Blocklocation += FVector(0.0f, 140.0f, 0.0f); // Offset due to the scale
+		Blocklocation += FVector(0.0f, 1.0f, 0.0f) * ((BlockSize.X + BlockSpacing) * 2); // Offset due to the scale
 		ASubmarineShip* NewShip = GetWorld()->SpawnActor<ASubmarineShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
-		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(20.0f, 20.0f, 20.0f));
+		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f) * (BlockSize.X * 100));
 		UE_LOG(LogTemp, Log, TEXT("--------[Submarine] >> %d-----------\n\n\n"), RandomIndex);
 		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr.Get());
+		if (!MustSpawn)
+			NewShip->SetActorHiddenInGame(true);
 	}
 	else if(ShipType->IsChildOf(ACruisserShip::StaticClass())){
 		// Spawn Cruiser
-		Blocklocation += FVector(0.0f, 130.0f, 0.0f); // Offset due to the scale
+		Blocklocation += FVector(0.0f, 1.0f, 0.0f) * (3489 * BlockSize.X - 7.78 * BlockSpacing); // Offset due to the scale
 		ACruisserShip* NewShip = GetWorld()->SpawnActor<ACruisserShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
-		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(7.0f, 7.0f, 7.0f));
+		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f) * (BlockSpacing / 10));
 		UE_LOG(LogTemp, Log, TEXT("--------[Cruisser] >> %d-----------\n\n\n"), RandomIndex);
 		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr.Get());
+		if (!MustSpawn)
+			NewShip->SetActorHiddenInGame(true);
 	}
 	
 }
@@ -163,6 +194,7 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> Sh
 	int32 BoardSize = BattleShipBoardPtr->Size;
 
 	// Used in the diagonal check
+	//bool left = false, right = false, top = false, bottom = false;
 	bool left, right, top, bottom = false;
 
 	// Vertical Ships Checks

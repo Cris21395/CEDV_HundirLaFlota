@@ -40,7 +40,7 @@ private:
 		TWeakObjectPtr<ABattleShipBoard> BattleShipBoardPtr;
 
 	// Spawns the ship in a correct place
-	void SpawnRandomShip(TSubclassOf<AShip> ShipType);
+	void SpawnRandomShip(TSubclassOf<AShip> ShipType, bool MustSpawn);
 
 	// Functions to check positions
 	bool IsValidIndex(int32 IndexToCheck, TSubclassOf<AShip> ShipType);
