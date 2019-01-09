@@ -34,28 +34,23 @@ private:
 	// Array of ship classes
 	UPROPERTY()
 		TArray<TSubclassOf<AShip>> ShipClasses;
-	
-	// Pointer to the board
-	UPROPERTY()
-		TWeakObjectPtr<ABattleShipBoard> BattleShipBoardPtr;
 
 	// Spawns the ship in a correct place
-	void SpawnRandomShip(TSubclassOf<AShip> ShipType, bool MustSpawn);
+	void SpawnRandomShip(ABattleShipBoard* BattleShipBoard, TSubclassOf<AShip> ShipType, bool MustSpawn);
 
 	// Functions to check positions
-	bool IsValidIndex(int32 IndexToCheck, TSubclassOf<AShip> ShipType);
+	bool IsValidIndex(int32 IndexToCheck, ABattleShipBoard* BattleShipBoard, TSubclassOf<AShip> ShipType);
 	int32 GetShipSize(TSubclassOf<AShip> ShipType);
 
 	// A ship cannot be placed out of the board
-	bool CheckBoardBoundaries(int32 IndexToCheck, TSubclassOf<AShip> ShipType); 
+	bool CheckBoardBoundaries(int32 IndexToCheck, ABattleShipBoard* BattleShipBoard, TSubclassOf<AShip> ShipType);
 	
 	// Two ships cannot ve in the same blocks
-	bool CheckCollisions(int32 IndexToCheck, TSubclassOf<AShip> ShipType);
+	bool CheckCollisions(int32 IndexToCheck, ABattleShipBoard* BattleShipBoard, TSubclassOf<AShip> ShipType);
 	
 	// There must be at least one block between ships
-	bool CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> ShipType);	
+	bool CheckShipBoundaries(int32 IndexToCheck, ABattleShipBoard* BattleShipBoard, TSubclassOf<AShip> ShipType);
 	
 	//True if the indexed block if empty
-	bool IsEmptyBlock(int32 IndexToCheck); 
-
+	bool IsEmptyBlock(ABattleShipBoard* BattleShipBoard, int32 IndexToCheck);
 };

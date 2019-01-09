@@ -19,52 +19,44 @@ AShipManager::AShipManager()
 void AShipManager::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	FString BattleBoardPlayerString = FString(TEXT("BattleShipBoardPlayer"));
-	FString BattleBoardMachineString = FString(TEXT("BattleShipBoardMachine"));
+
+	// Array of boards
+	TArray<ABattleShipBoard*> BattleShipBoardArray;
 
 	// Get a reference of board to spawn ships
 	for (TActorIterator<ABattleShipBoard> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
-		if (BattleBoardPlayerString.Equals(ActorItr->GetName()))
+		// Conversion to smart pointer
+		BattleShipBoardArray.Add(*ActorItr);
+	}
+
+	// Spawn ships in their specific boards
+	for (auto& BattleShipBoardPtr : BattleShipBoardArray)
+	{
+		for (auto& TypeShip : ShipClasses)
 		{
-			// Conversion to smart pointer
-			BattleShipBoardPtr = *ActorItr;
-			break;
+			// If board is clickable, it is for machine
+			// If board is not clickable, it is for player
+			if (BattleShipBoardPtr->bIsBoardClickable)
+			{
+				SpawnRandomShip(BattleShipBoardPtr, TypeShip, false);
+			}
+			else
+			{
+				SpawnRandomShip(BattleShipBoardPtr, TypeShip, true);
+			}
 		}
 	}
-
-	
-	// Spawn ships for machine
-	for (auto& TypeShip : ShipClasses) 
-	{
-		SpawnRandomShip(TypeShip, true);
-	}
-
-	//////////////////////TMP///////////////////////
-	for (TActorIterator<ABattleShipBoard> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		if (BattleBoardMachineString.Equals(ActorItr->GetName()))
-		{
-			// Conversion to smart pointer
-			BattleShipBoardPtr = *ActorItr;
-			break;
-		}
-	}
-
-	// Spawn ships for player
-	for (auto& TypeShip : ShipClasses)
-	{
-		SpawnRandomShip(TypeShip, false);
-	}
-	/////////////////////////////////////////////////////
 
 	// Move ship array to board. ShipClasses will be left empty
 	// This is made so that ships are not replicated
-	BattleShipBoardPtr->Ships = MoveTemp(ShipClasses);
+	for (auto& BattleShipBoardPtr : BattleShipBoardArray)
+	{
+		BattleShipBoardPtr->Ships = MoveTemp(ShipClasses);
+	}
 }
 
-void AShipManager::SpawnRandomShip(TSubclassOf<AShip> ShipType, bool MustSpawn)
+void AShipManager::SpawnRandomShip(ABattleShipBoard* BattleShipBoardPtr, TSubclassOf<AShip> ShipType, bool MustSpawn)
 {
 	int32 Size = BattleShipBoardPtr->Size;
 	int32 BlockSpacing = BattleShipBoardPtr->BlockSpacing;
@@ -72,8 +64,9 @@ void AShipManager::SpawnRandomShip(TSubclassOf<AShip> ShipType, bool MustSpawn)
 
 	// Get random index
 	int32 RandomIndex = FMath::Rand() % (Size * Size);
-	//int32 RandomIndex = 6;
-	while (!IsValidIndex(RandomIndex, ShipType)) {	// Get different index when it is not valid
+
+	// Get different index when it is not valid
+	while (!IsValidIndex(RandomIndex, BattleShipBoardPtr, ShipType)) {
 		UE_LOG(LogTemp, Log, TEXT("REPEAT! %d\n\n\n"), RandomIndex);
 		RandomIndex = FMath::Rand() % (Size * Size);	
 	}
@@ -84,56 +77,53 @@ void AShipManager::SpawnRandomShip(TSubclassOf<AShip> ShipType, bool MustSpawn)
 	// Location of Block
 	FVector Blocklocation = Block->GetActorLocation();
 
+	// New ship that will be converted into each boat
+	AShip* NewShip = nullptr;
+
 	// IsChildOf compares if Class == OtherClass or Class == Child of Other Class
 	if (ShipType->IsChildOf(ABoatShip::StaticClass())) {
 		// Spawn boat
 		Blocklocation += FVector(0.0f, 0.0f, 10.0f); // Offset due to the scale
-		ABoatShip* NewShip = GetWorld()->SpawnActor<ABoatShip>(Blocklocation, FRotator(0.0f, 45.0f, 90.0f));
+		NewShip = GetWorld()->SpawnActor<ABoatShip>(Blocklocation, FRotator(0.0f, 45.0f, 90.0f));
 		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f) * (BlockSize.X*100 + 10));
 		UE_LOG(LogTemp, Log, TEXT("--------[Boat] >> %d-----------\n\n\n"), RandomIndex);
-		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr.Get());
-		if (!MustSpawn)
-			NewShip->SetActorHiddenInGame(true);
 	}
 	else if (ShipType->IsChildOf(AVesselShip::StaticClass())) {
 		// Spawn Vessel
 		Blocklocation += FVector(30.0f, 0.0f, 40.0f); // Offset due to the scale
-		AVesselShip* NewShip = GetWorld()->SpawnActor<AVesselShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
-
+		NewShip = GetWorld()->SpawnActor<AVesselShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
 		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f) * (BlockSize.X * 100 + BlockSpacing*(BlockSize.X+0.1f)));
 		UE_LOG(LogTemp, Log, TEXT("--------[Vessel] >> %d-----------\n\n\n"), RandomIndex);
-		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr.Get());
-		if (!MustSpawn)
-			NewShip->SetActorHiddenInGame(true);
 	}
 	else if (ShipType->IsChildOf(ASubmarineShip::StaticClass())) {
 		// Spawn Submarine
 		Blocklocation += FVector(0.0f, 1.0f, 0.0f) * ((BlockSize.X + BlockSpacing) * 2); // Offset due to the scale
-		ASubmarineShip* NewShip = GetWorld()->SpawnActor<ASubmarineShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
+		NewShip = GetWorld()->SpawnActor<ASubmarineShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
 		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f) * (BlockSize.X * 100));
 		UE_LOG(LogTemp, Log, TEXT("--------[Submarine] >> %d-----------\n\n\n"), RandomIndex);
-		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr.Get());
-		if (!MustSpawn)
-			NewShip->SetActorHiddenInGame(true);
 	}
 	else if(ShipType->IsChildOf(ACruisserShip::StaticClass())){
 		// Spawn Cruiser
 		Blocklocation += FVector(0.0f, 1.0f, 0.0f) * (3489 * BlockSize.X - 7.78 * BlockSpacing); // Offset due to the scale
-		ACruisserShip* NewShip = GetWorld()->SpawnActor<ACruisserShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
+		NewShip = GetWorld()->SpawnActor<ACruisserShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
 		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f) * (BlockSpacing / 10));
 		UE_LOG(LogTemp, Log, TEXT("--------[Cruisser] >> %d-----------\n\n\n"), RandomIndex);
-		NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr.Get());
-		if (!MustSpawn)
-			NewShip->SetActorHiddenInGame(true);
 	}
-	
+
+	if (!MustSpawn)
+	{
+		NewShip->SetActorHiddenInGame(true);
+		NewShip->SetActorEnableCollision(false);
+	}
+
+	NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr);
 }
 
-bool AShipManager::IsValidIndex(int32 IndexToCheck, TSubclassOf<AShip> ShipType)
+bool AShipManager::IsValidIndex(int32 IndexToCheck, ABattleShipBoard* BattleShipBoardPtr, TSubclassOf<AShip> ShipType)
 {
-	if (CheckBoardBoundaries(IndexToCheck, ShipType) &&
-		CheckCollisions(IndexToCheck, ShipType) &&
-		CheckShipBoundaries(IndexToCheck, ShipType))
+	if (CheckBoardBoundaries(IndexToCheck, BattleShipBoardPtr, ShipType) &&
+		CheckCollisions(IndexToCheck, BattleShipBoardPtr, ShipType) &&
+		CheckShipBoundaries(IndexToCheck, BattleShipBoardPtr, ShipType))
 		return true;
 	
 	return false;
@@ -153,7 +143,7 @@ int32 AShipManager::GetShipSize(TSubclassOf<AShip> ShipType)
 	return Size;
 }
 
-bool AShipManager::CheckBoardBoundaries(int32 IndexToCheck, TSubclassOf<AShip> ShipType)
+bool AShipManager::CheckBoardBoundaries(int32 IndexToCheck, ABattleShipBoard* BattleShipBoardPtr, TSubclassOf<AShip> ShipType)
 {
 	int32 Size = GetShipSize(ShipType);
 	if (ShipType->IsChildOf(ABoatShip::StaticClass())) // Always true for Boat
@@ -167,7 +157,7 @@ bool AShipManager::CheckBoardBoundaries(int32 IndexToCheck, TSubclassOf<AShip> S
 	return false;
 }
 
-bool AShipManager::CheckCollisions(int32 IndexToCheck, TSubclassOf<AShip> ShipType)
+bool AShipManager::CheckCollisions(int32 IndexToCheck, ABattleShipBoard* BattleShipBoardPtr, TSubclassOf<AShip> ShipType)
 {
 	int32 Size = GetShipSize(ShipType);
 	
@@ -188,7 +178,7 @@ bool AShipManager::CheckCollisions(int32 IndexToCheck, TSubclassOf<AShip> ShipTy
 	return true; // Is valid
 }
 
-bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> ShipType)
+bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, ABattleShipBoard* BattleShipBoardPtr, TSubclassOf<AShip> ShipType)
 {
 	int32 ShipSize = GetShipSize(ShipType);
 	int32 BoardSize = BattleShipBoardPtr->Size;
@@ -207,7 +197,7 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> Sh
 			left = true;
 			// If there is a Ship in any of the left
 			for (int i = 0; i < ShipSize; i++) {
-				if (!IsEmptyBlock(IndexToCheck + BoardSize * i - 1))
+				if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck + BoardSize * i - 1))
 					return false;
 			}
 		}
@@ -216,7 +206,7 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> Sh
 		if (BoardSize < IndexToCheck) {
 			bottom = true;
 			// If there is a ship in the bottom
-				if (!IsEmptyBlock(IndexToCheck - BoardSize))
+				if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck - BoardSize))
 					return false;
 		}
 
@@ -225,7 +215,7 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> Sh
 			right = true;
 			// If there is a ship in the right
 			for (int i = 0; i < ShipSize; i++) {
-				if (!IsEmptyBlock(IndexToCheck + BoardSize * i + 1))
+				if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck + BoardSize * i + 1))
 					return false;
 			}
 		}
@@ -234,22 +224,22 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> Sh
 		if ((IndexToCheck + BoardSize*ShipSize) < BoardSize*BoardSize) {
 			top = true;
 			// If there is a ship in any of the top 
-				if (!IsEmptyBlock(IndexToCheck + BoardSize * ShipSize))
+				if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck + BoardSize * ShipSize))
 					return false;
 		}
 
 		// Corners Checks
 		if (top && left)
-			if (!IsEmptyBlock(IndexToCheck + BoardSize * ShipSize - 1))
+			if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck + BoardSize * ShipSize - 1))
 				return false;
 		if (top && right)
-			if (!IsEmptyBlock(IndexToCheck + BoardSize * ShipSize + 1))
+			if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck + BoardSize * ShipSize + 1))
 				return false;
 		if (bottom && left)
-			if (!IsEmptyBlock(IndexToCheck - BoardSize - 1))
+			if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck - BoardSize - 1))
 				return false;
 		if (bottom && right)
-			if (!IsEmptyBlock(IndexToCheck - BoardSize + 1))
+			if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck - BoardSize + 1))
 				return false;
 	}
 	//////////////// Horizontal Ships Checks /////////////////
@@ -258,7 +248,7 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> Sh
 		if (IndexToCheck % BoardSize != 0) {
 			left = true;
 			// If there is a Ship on the left
-			if (!IsEmptyBlock(IndexToCheck - 1))
+			if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck - 1))
 				return false;
 		}
 
@@ -267,7 +257,7 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> Sh
 			bottom = true;
 			// If there is a ship in any box of the bottom
 			for (int i = 0; i < ShipSize; i++) {
-				if (!IsEmptyBlock(IndexToCheck - BoardSize + i))
+				if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck - BoardSize + i))
 					return false;
 			}
 		}
@@ -276,7 +266,7 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> Sh
 		if ((IndexToCheck + ShipSize) % BoardSize != 0 || IndexToCheck == 0) {
 			right = true;
 			// If there is a ship in the right
-			if (!IsEmptyBlock(IndexToCheck + ShipSize))
+			if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck + ShipSize))
 				return false;
 		}
 
@@ -285,23 +275,23 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> Sh
 			top = true;
 			// If there is a ship in any of the top 
 			for (int i = 0; i < ShipSize; i++) {
-				if (!IsEmptyBlock(IndexToCheck + BoardSize + i))
+				if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck + BoardSize + i))
 					return false;
 			}
 		}
 
 		// Corners checks
 		if (top && left)
-			if (!IsEmptyBlock(IndexToCheck + BoardSize - 1))
+			if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck + BoardSize - 1))
 				return false;
 		if (top && right)
-			if (!IsEmptyBlock(IndexToCheck + BoardSize + ShipSize))
+			if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck + BoardSize + ShipSize))
 				return false;
 		if (bottom && left)
-			if (!IsEmptyBlock(IndexToCheck - BoardSize - 1))
+			if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck - BoardSize - 1))
 				return false;
 		if (bottom && right)
-			if (!IsEmptyBlock(IndexToCheck - BoardSize + ShipSize))
+			if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck - BoardSize + ShipSize))
 				return false;
 
 	}
@@ -310,7 +300,7 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> Sh
 	return true;
 }
 
-bool AShipManager::IsEmptyBlock(int32 IndexToCheck)
+bool AShipManager::IsEmptyBlock(ABattleShipBoard* BattleShipBoardPtr, int32 IndexToCheck)
 {
 	if (IndexToCheck >= 0 && IndexToCheck < 100) {
 		ABlock* Block = BattleShipBoardPtr->GetBlockByIndex(IndexToCheck);
