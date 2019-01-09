@@ -74,7 +74,7 @@ void AShipManager::SpawnRandomShip(TSubclassOf<AShip> ShipType, bool MustSpawn)
 	int32 RandomIndex = FMath::Rand() % (Size * Size);
 	//int32 RandomIndex = 6;
 	while (!IsValidIndex(RandomIndex, ShipType)) {	// Get different index when it is not valid
-		UE_LOG(LogTemp, Log, TEXT("nnnnnnnnnnnnnnnnnnnnnnnnREPEAT! %d\n\n\n"), RandomIndex);
+		UE_LOG(LogTemp, Log, TEXT("REPEAT! %d\n\n\n"), RandomIndex);
 		RandomIndex = FMath::Rand() % (Size * Size);	
 	}
 
@@ -194,8 +194,11 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> Sh
 	int32 BoardSize = BattleShipBoardPtr->Size;
 
 	// Used in the diagonal check
-	//bool left = false, right = false, top = false, bottom = false;
-	bool left, right, top, bottom = false;
+	bool left = false;
+	bool right = false;
+	bool top = false;
+	bool bottom = false;
+	//bool left, right, top, bottom = false;
 
 	// Vertical Ships Checks
 	if (ShipType->IsChildOf(AVesselShip::StaticClass())) {
@@ -218,7 +221,7 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> Sh
 		}
 
 		// There are right boxes
-		if (IndexToCheck % BoardSize != 0 || IndexToCheck == 0) {
+		if ((IndexToCheck +1) % BoardSize != 0 || IndexToCheck == 0) {
 			right = true;
 			// If there is a ship in the right
 			for (int i = 0; i < ShipSize; i++) {
@@ -282,7 +285,7 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, TSubclassOf<AShip> Sh
 			top = true;
 			// If there is a ship in any of the top 
 			for (int i = 0; i < ShipSize; i++) {
-				if (!IsEmptyBlock(IndexToCheck + BoardSize * i))
+				if (!IsEmptyBlock(IndexToCheck + BoardSize + i))
 					return false;
 			}
 		}
