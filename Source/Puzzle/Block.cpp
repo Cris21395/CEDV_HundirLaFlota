@@ -16,6 +16,7 @@ ABlock::ABlock()
 		ConstructorHelpers::FObjectFinderOptional<UMaterial> Transparency_Material;
 		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Blue_Material;
 		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Yellow_Material;
+		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Red_Material;
 		ConstructorHelpers::FObjectFinderOptional<USoundBase> AudioExplosion;
 		ConstructorHelpers::FObjectFinderOptional<UParticleSystem> ExplosionParticleSystem;
 		FConstructorStatics()
@@ -23,6 +24,7 @@ ABlock::ABlock()
 			, Transparency_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Material.Transparency_Material"))
 			, Transparency_Blue_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Blue_Material_Inst.Transparency_Blue_Material_Inst"))
 			, Transparency_Yellow_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Orange_Material_Inst.Transparency_Orange_Material_Inst"))
+			, Transparency_Red_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Red_Material_Inst.Transparency_Red_Material_Inst"))
 			, AudioExplosion(TEXT("/Game/StarterContent/Audio/Explosion01.Explosion01"))
 			, ExplosionParticleSystem(TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion"))
 		{
@@ -46,6 +48,7 @@ ABlock::ABlock()
 	Transparency_Material = ConstructorStatics.Transparency_Material.Get();
 	Transparency_Blue_Material = ConstructorStatics.Transparency_Blue_Material.Get();
 	Transparency_Yellow_Material = ConstructorStatics.Transparency_Yellow_Material.Get();
+	Transparency_Red_Material = ConstructorStatics.Transparency_Red_Material.Get();
 }
 
 void ABlock::ReceiveInputFromMouse()
@@ -78,16 +81,21 @@ void ABlock::HandleClicked()
 	{
 		bIsActive = true;
 
-		// Change material
-		BlockMesh->SetMaterial(0, Transparency_Material.Get());
-
 		// If block has a ship, we fire a explosion
 		if (bHasShip)
 		{
+			// Change material
+			BlockMesh->SetMaterial(0, Transparency_Red_Material.Get());
+
 			// Call delegate if it is bound
 			DereferenceBlockDelegate.ExecuteIfBound(this);
 
 			bHasShip = false;
+		}
+		else
+		{
+			// Change material
+			BlockMesh->SetMaterial(0, Transparency_Material.Get());
 		}
 	}
 }

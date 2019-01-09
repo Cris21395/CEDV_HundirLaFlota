@@ -68,6 +68,10 @@ private:
 	UPROPERTY()
 		TWeakObjectPtr<UMaterialInstance> Transparency_Yellow_Material;
 
+	// Pointer to red material used on the focused block that has been hit
+	UPROPERTY()
+		TWeakObjectPtr<UMaterialInstance> Transparency_Red_Material;
+
 	// Handle the block being clicked
 	UFUNCTION()
 		void BlockClicked(UPrimitiveComponent* ClickedComp, FKey ButtonClicked);

@@ -36,7 +36,7 @@ private:
 		TArray<TSubclassOf<AShip>> ShipClasses;
 
 	// Spawns the ship in a correct place
-	void SpawnRandomShip(ABattleShipBoard* BattleShipBoard, TSubclassOf<AShip> ShipType, bool MustSpawn);
+	void SpawnRandomShip(ABattleShipBoard* BattleShipBoard, TSubclassOf<AShip> ShipType, bool bMustBoardBeVisible);
 
 	// Functions to check positions
 	bool IsValidIndex(int32 IndexToCheck, ABattleShipBoard* BattleShipBoard, TSubclassOf<AShip> ShipType);
@@ -45,7 +45,7 @@ private:
 	// A ship cannot be placed out of the board
 	bool CheckBoardBoundaries(int32 IndexToCheck, ABattleShipBoard* BattleShipBoard, TSubclassOf<AShip> ShipType);
 	
-	// Two ships cannot ve in the same blocks
+	// Two ships cannot be in the same blocks
 	bool CheckCollisions(int32 IndexToCheck, ABattleShipBoard* BattleShipBoard, TSubclassOf<AShip> ShipType);
 	
 	// There must be at least one block between ships

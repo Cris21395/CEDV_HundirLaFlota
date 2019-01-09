@@ -56,7 +56,7 @@ void AShipManager::BeginPlay()
 	}
 }
 
-void AShipManager::SpawnRandomShip(ABattleShipBoard* BattleShipBoardPtr, TSubclassOf<AShip> ShipType, bool MustSpawn)
+void AShipManager::SpawnRandomShip(ABattleShipBoard* BattleShipBoardPtr, TSubclassOf<AShip> ShipType, bool bMustShipsBeVisible)
 {
 	int32 Size = BattleShipBoardPtr->Size;
 	int32 BlockSpacing = BattleShipBoardPtr->BlockSpacing;
@@ -67,7 +67,6 @@ void AShipManager::SpawnRandomShip(ABattleShipBoard* BattleShipBoardPtr, TSubcla
 
 	// Get different index when it is not valid
 	while (!IsValidIndex(RandomIndex, BattleShipBoardPtr, ShipType)) {
-		UE_LOG(LogTemp, Log, TEXT("REPEAT! %d\n\n\n"), RandomIndex);
 		RandomIndex = FMath::Rand() % (Size * Size);	
 	}
 
@@ -86,34 +85,30 @@ void AShipManager::SpawnRandomShip(ABattleShipBoard* BattleShipBoardPtr, TSubcla
 		Blocklocation += FVector(0.0f, 0.0f, 10.0f); // Offset due to the scale
 		NewShip = GetWorld()->SpawnActor<ABoatShip>(Blocklocation, FRotator(0.0f, 45.0f, 90.0f));
 		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f) * (BlockSize.X*100 + 10));
-		UE_LOG(LogTemp, Log, TEXT("--------[Boat] >> %d-----------\n\n\n"), RandomIndex);
 	}
 	else if (ShipType->IsChildOf(AVesselShip::StaticClass())) {
 		// Spawn Vessel
 		Blocklocation += FVector(30.0f, 0.0f, 40.0f); // Offset due to the scale
 		NewShip = GetWorld()->SpawnActor<AVesselShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
 		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f) * (BlockSize.X * 100 + BlockSpacing*(BlockSize.X+0.1f)));
-		UE_LOG(LogTemp, Log, TEXT("--------[Vessel] >> %d-----------\n\n\n"), RandomIndex);
 	}
 	else if (ShipType->IsChildOf(ASubmarineShip::StaticClass())) {
 		// Spawn Submarine
 		Blocklocation += FVector(0.0f, 1.0f, 0.0f) * ((BlockSize.X + BlockSpacing) * 2); // Offset due to the scale
 		NewShip = GetWorld()->SpawnActor<ASubmarineShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
 		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f) * (BlockSize.X * 100));
-		UE_LOG(LogTemp, Log, TEXT("--------[Submarine] >> %d-----------\n\n\n"), RandomIndex);
 	}
 	else if(ShipType->IsChildOf(ACruisserShip::StaticClass())){
 		// Spawn Cruiser
 		Blocklocation += FVector(0.0f, 1.0f, 0.0f) * (3489 * BlockSize.X - 7.78 * BlockSpacing); // Offset due to the scale
 		NewShip = GetWorld()->SpawnActor<ACruisserShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
 		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f) * (BlockSpacing / 10));
-		UE_LOG(LogTemp, Log, TEXT("--------[Cruisser] >> %d-----------\n\n\n"), RandomIndex);
 	}
 
-	if (!MustSpawn)
+	if (!bMustShipsBeVisible)
 	{
-		NewShip->SetActorHiddenInGame(true);
-		NewShip->SetActorEnableCollision(false);
+		NewShip->SetActorHiddenInGame(!bMustShipsBeVisible);
+		NewShip->SetActorEnableCollision(bMustShipsBeVisible);
 	}
 
 	NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr);
@@ -121,12 +116,14 @@ void AShipManager::SpawnRandomShip(ABattleShipBoard* BattleShipBoardPtr, TSubcla
 
 bool AShipManager::IsValidIndex(int32 IndexToCheck, ABattleShipBoard* BattleShipBoardPtr, TSubclassOf<AShip> ShipType)
 {
+	bool bIsIndexValid = false;
+
 	if (CheckBoardBoundaries(IndexToCheck, BattleShipBoardPtr, ShipType) &&
 		CheckCollisions(IndexToCheck, BattleShipBoardPtr, ShipType) &&
 		CheckShipBoundaries(IndexToCheck, BattleShipBoardPtr, ShipType))
-		return true;
+		return !bIsIndexValid;
 	
-	return false;
+	return bIsIndexValid;
 }
 
 int32 AShipManager::GetShipSize(TSubclassOf<AShip> ShipType)
@@ -146,36 +143,40 @@ int32 AShipManager::GetShipSize(TSubclassOf<AShip> ShipType)
 bool AShipManager::CheckBoardBoundaries(int32 IndexToCheck, ABattleShipBoard* BattleShipBoardPtr, TSubclassOf<AShip> ShipType)
 {
 	int32 Size = GetShipSize(ShipType);
+	bool bIsBoatInBoard = false;
+
 	if (ShipType->IsChildOf(ABoatShip::StaticClass())) // Always true for Boat
-		return true;
+		return !bIsBoatInBoard;
 	else if (ShipType->IsChildOf(AVesselShip::StaticClass()) &&
 		IndexToCheck + BattleShipBoardPtr->Size < BattleShipBoardPtr->Size*BattleShipBoardPtr->Size) //Vertical Check for Vessel
-		return true;
+		return !bIsBoatInBoard;
 	else if ((ShipType->IsChildOf(ACruisserShip::StaticClass()) || ShipType->IsChildOf(ASubmarineShip::StaticClass())) &&
 		((IndexToCheck % BattleShipBoardPtr->Size) + Size) <= BattleShipBoardPtr->Size) // Horizontal Check for Submarine and Cruisser
-		return true;
-	return false;
+		return !bIsBoatInBoard;
+
+	return bIsBoatInBoard;
 }
 
 bool AShipManager::CheckCollisions(int32 IndexToCheck, ABattleShipBoard* BattleShipBoardPtr, TSubclassOf<AShip> ShipType)
 {
 	int32 Size = GetShipSize(ShipType);
-	
+	bool bIsValid = true;
+
 	if (ShipType->IsChildOf(AVesselShip::StaticClass())) { // Is vertical
 		for (int i = 0; i < Size; i++) {
 			if (BattleShipBoardPtr->GetBlockByIndex(IndexToCheck + BattleShipBoardPtr->Size*i)->bHasShip)
-				return false;	// If the block is already occupied is not valid
+				return !bIsValid;	// If the block is already occupied is not valid
 		}
 	}
 	else	// Is Horizontal
 	{
 		for (int i = 0; i < Size; i++) {
 			if (BattleShipBoardPtr->GetBlockByIndex(IndexToCheck + i)->bHasShip)
-				return false;	// If the block is already occupied is not valid
+				return !bIsValid;	// If the block is already occupied is not valid
 		}
 	}
 
-	return true; // Is valid
+	return bIsValid; // Is valid
 }
 
 bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, ABattleShipBoard* BattleShipBoardPtr, TSubclassOf<AShip> ShipType)
@@ -188,7 +189,6 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, ABattleShipBoard* Bat
 	bool right = false;
 	bool top = false;
 	bool bottom = false;
-	//bool left, right, top, bottom = false;
 
 	// Vertical Ships Checks
 	if (ShipType->IsChildOf(AVesselShip::StaticClass())) {
@@ -293,24 +293,22 @@ bool AShipManager::CheckShipBoundaries(int32 IndexToCheck, ABattleShipBoard* Bat
 		if (bottom && right)
 			if (!IsEmptyBlock(BattleShipBoardPtr, IndexToCheck - BoardSize + ShipSize))
 				return false;
-
 	}
-
 
 	return true;
 }
 
 bool AShipManager::IsEmptyBlock(ABattleShipBoard* BattleShipBoardPtr, int32 IndexToCheck)
 {
-	if (IndexToCheck >= 0 && IndexToCheck < 100) {
+	int32 Size = BattleShipBoardPtr->Size;
+	bool bIsEmpty = true;
+
+	if (IndexToCheck >= 0 && IndexToCheck < (Size * Size))
+	{
 		ABlock* Block = BattleShipBoardPtr->GetBlockByIndex(IndexToCheck);
 		if (Block->bHasShip)
-			return false;
-	}
-	else {
-		UE_LOG(LogTemp, Log, TEXT("%%%%%%%%%%%%[EXCEPTION ] >> %d %%%%%%%%%%%%%\n\n\n"), IndexToCheck);
-		return false;
+			return !bIsEmpty;
 	}
 
-	return true;
+	return bIsEmpty;
 }
