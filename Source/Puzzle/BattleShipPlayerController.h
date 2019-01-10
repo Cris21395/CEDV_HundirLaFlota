@@ -2,6 +2,10 @@
 
 #pragma once
 
+#include "BattleShipTurn.h"
+#include "BattleShipBoard.h"
+#include "IARobot.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "BattleShipPlayerController.generated.h"
@@ -16,4 +20,22 @@ class PUZZLE_API ABattleShipPlayerController : public APlayerController
 
 public:
 	ABattleShipPlayerController();
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
+	
+	// Reference to the IARobot in the world
+	TWeakObjectPtr<AIARobot> Robot;
+
+	// The turn that is playing now is stored
+	EBattleShipTurn currentTurn;
+
+	// Function called in block after a click to change the turn
+	void ChangeTurn();
+
+private:
+	// Pointer to player board to change the clickability
+	TWeakObjectPtr<ABattleShipBoard> BattleShipPlayerBoardPtr;
+
+	// Pointer to machine board to change the clickability
+	TWeakObjectPtr<ABattleShipBoard> BattleShipMechineBoardPtr;
 };

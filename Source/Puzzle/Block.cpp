@@ -2,6 +2,7 @@
 
 #include "Block.h"
 #include "BattleShipBoard.h"
+#include "BattleShipPlayerController.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
@@ -97,6 +98,8 @@ void ABlock::HandleClicked()
 			// Change material
 			BlockMesh->SetMaterial(0, Transparency_Material.Get());
 		}
+		ABattleShipPlayerController* PlayerController = Cast<ABattleShipPlayerController>(GetWorld()->GetFirstPlayerController());
+		PlayerController->ChangeTurn();
 	}
 }
 

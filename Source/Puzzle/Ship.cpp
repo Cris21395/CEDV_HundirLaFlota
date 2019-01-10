@@ -6,6 +6,9 @@
 // Sets default values
 AShip::AShip() 
 {
+	//Initialize as not destroyed
+	isDestroyed = false;
+
 	// Save pointer to audio explosion
 	ExplosionParticleSystem = ConstructorHelpers::FObjectFinder<UParticleSystem>
 		(TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion")).Object;

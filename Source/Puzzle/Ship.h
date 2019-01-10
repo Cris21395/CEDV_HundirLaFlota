@@ -31,6 +31,10 @@ public:
 	UPROPERTY()
 		TArray<int32> OccupiedPositions;
 
+	// Whether the ship has been destroyed or not
+	UPROPERTY()
+		bool isDestroyed;
+
 protected:
 	// Execute the explosion when a ship has been hit
 	void FireExplosionIfItIsHit(ABlock* Block);
