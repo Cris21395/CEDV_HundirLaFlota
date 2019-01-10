@@ -18,16 +18,12 @@ ABlock::ABlock()
 		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Blue_Material;
 		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Yellow_Material;
 		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Red_Material;
-		ConstructorHelpers::FObjectFinderOptional<USoundBase> AudioExplosion;
-		ConstructorHelpers::FObjectFinderOptional<UParticleSystem> ExplosionParticleSystem;
 		FConstructorStatics()
 			: PlaneMesh(TEXT("/Game/Geometry/CubeMeshes/Cube.Cube"))
 			, Transparency_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Material.Transparency_Material"))
 			, Transparency_Blue_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Blue_Material_Inst.Transparency_Blue_Material_Inst"))
 			, Transparency_Yellow_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Orange_Material_Inst.Transparency_Orange_Material_Inst"))
 			, Transparency_Red_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Red_Material_Inst.Transparency_Red_Material_Inst"))
-			, AudioExplosion(TEXT("/Game/StarterContent/Audio/Explosion01.Explosion01"))
-			, ExplosionParticleSystem(TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion"))
 		{
 		}
 	};
@@ -98,6 +94,7 @@ void ABlock::HandleClicked()
 			// Change material
 			BlockMesh->SetMaterial(0, Transparency_Material.Get());
 		}
+
 		ABattleShipPlayerController* PlayerController = Cast<ABattleShipPlayerController>(GetWorld()->GetFirstPlayerController());
 		PlayerController->ChangeTurn();
 	}

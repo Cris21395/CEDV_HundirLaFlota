@@ -3,8 +3,6 @@
 #pragma once
 
 #include "BattleShipBoard.h"
-
-
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "IARobot.generated.h"
@@ -24,12 +22,9 @@ protected:
 
 public:	
 	// Player Board Pointer
-	TWeakObjectPtr<ABattleShipBoard> BattleShipPlayerBoardPtr;
+	UPROPERTY()
+		TWeakObjectPtr<ABattleShipBoard> BattleShipPlayerBoardPtr;
 
 	// Called when robot has the turn
 	void PlayTurn();
-	
-
-	
-	
 };

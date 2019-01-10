@@ -24,7 +24,8 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	
 	// Reference to the IARobot in the world
-	TWeakObjectPtr<AIARobot> Robot;
+	UPROPERTY()
+		TWeakObjectPtr<AIARobot> Robot;
 
 	// The turn that is playing now is stored
 	EBattleShipTurn currentTurn;
@@ -33,9 +34,19 @@ public:
 	void ChangeTurn();
 
 private:
+	// Countdown for changing the turn
+	UPROPERTY()
+		float DelayToChangeTurn;
+
+	// Time spent during robot turn
+	UPROPERTY()
+		float AccumulatedDeltaTime;
+
 	// Pointer to player board to change the clickability
-	TWeakObjectPtr<ABattleShipBoard> BattleShipPlayerBoardPtr;
+	UPROPERTY()
+		TWeakObjectPtr<ABattleShipBoard> BattleShipPlayerBoardPtr;
 
 	// Pointer to machine board to change the clickability
-	TWeakObjectPtr<ABattleShipBoard> BattleShipMechineBoardPtr;
+	UPROPERTY()
+		TWeakObjectPtr<ABattleShipBoard> BattleShipMechineBoardPtr;
 };

@@ -3,7 +3,7 @@
 #include "BattleShipPlayerController.h"
 #include "EngineUtils.h"
 
-ABattleShipPlayerController::ABattleShipPlayerController()
+ABattleShipPlayerController::ABattleShipPlayerController() : DelayToChangeTurn(3), AccumulatedDeltaTime(0)
 {
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
@@ -12,49 +12,36 @@ ABattleShipPlayerController::ABattleShipPlayerController()
 
 void ABattleShipPlayerController::BeginPlay()
 {
-	FString BattleBoardPlayerString = FString(TEXT("BattleShipBoardPlayer"));
-	FString BattleBoardMachineString = FString(TEXT("BattleShipBoardMachine"));
-
-	// Get a reference of board to spawn ships
-	for (TActorIterator<ABattleShipBoard> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		if (BattleBoardPlayerString.Equals(ActorItr->GetName()))
-		{
-			// Conversion to smart pointer
-			BattleShipPlayerBoardPtr = *ActorItr;
-			break;
-		}
-		if (BattleBoardMachineString.Equals(ActorItr->GetName()))
-		{
-			// Conversion to smart pointer
-			BattleShipMechineBoardPtr = *ActorItr;
-			break;
-		}
-	}
-
 	// Get a reference to the IARobot
 	for (TActorIterator<AIARobot> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		Robot = *ActorItr;
 	}
-	
+
 	// Turn initialized in player
 	currentTurn = EBattleShipTurn::PLAYER;
 }
 
 void ABattleShipPlayerController::Tick(float DeltaSeconds)
 {
-	// If its the player turn
-	if (currentTurn == EBattleShipTurn::PLAYER) {
-		// No clickable so cannot keep presing blocks
-		BattleShipMechineBoardPtr->bIsBoardClickable = true;
+	// If it's the player turn
+	if (currentTurn == EBattleShipTurn::PLAYER) 
+	{
+		// Enable events for player
 	} 
-	// If is the machine turn
-	else if (currentTurn == EBattleShipTurn::IA) {
-		BattleShipMechineBoardPtr->bIsBoardClickable = false;
-		// Introduce a little delay
-		Robot->PlayTurn();
-		//currentTurn = EBattleShipTurn::PLAYER;
+	// If it's the machine turn
+	else if (currentTurn == EBattleShipTurn::IA)
+	{
+		AccumulatedDeltaTime += DeltaSeconds;
+
+		// Disable events for player
+
+		if (AccumulatedDeltaTime >= DelayToChangeTurn)
+		{
+			Robot->PlayTurn();
+
+			AccumulatedDeltaTime = 0.0f;
+		}
 	}
 
 	// The game have finished
@@ -72,5 +59,3 @@ void ABattleShipPlayerController::ChangeTurn()
 	else if (currentTurn == EBattleShipTurn::IA)
 		currentTurn = EBattleShipTurn::PLAYER;
 }
-
-
