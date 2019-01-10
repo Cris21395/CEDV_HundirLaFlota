@@ -73,6 +73,8 @@ void ABlock::BlockEndMouseOver(UPrimitiveComponent * MouseOverComp)
 
 void ABlock::HandleClicked()
 {
+	ABattleShipPlayerController* PlayerController = Cast<ABattleShipPlayerController>(GetWorld()->GetFirstPlayerController());
+
 	// Check we are not already active
 	if (!bIsActive)
 	{
@@ -93,10 +95,10 @@ void ABlock::HandleClicked()
 		{
 			// Change material
 			BlockMesh->SetMaterial(0, Transparency_Material.Get());
-		}
 
-		ABattleShipPlayerController* PlayerController = Cast<ABattleShipPlayerController>(GetWorld()->GetFirstPlayerController());
-		PlayerController->ChangeTurn();
+			// Change turn when player has not hit a ship
+			PlayerController->ChangeTurn();
+		}
 	}
 }
 

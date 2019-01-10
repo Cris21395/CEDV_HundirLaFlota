@@ -6,8 +6,6 @@
 ABattleShipPlayerController::ABattleShipPlayerController() : DelayToChangeTurn(3), AccumulatedDeltaTime(0)
 {
 	bShowMouseCursor = true;
-	bEnableClickEvents = true;
-	bEnableMouseOverEvents = true;
 }
 
 void ABattleShipPlayerController::BeginPlay()
@@ -28,6 +26,7 @@ void ABattleShipPlayerController::Tick(float DeltaSeconds)
 	if (currentTurn == EBattleShipTurn::PLAYER) 
 	{
 		// Enable events for player
+		SetReceiveInput(true);
 	} 
 	// If it's the machine turn
 	else if (currentTurn == EBattleShipTurn::IA)
@@ -35,6 +34,7 @@ void ABattleShipPlayerController::Tick(float DeltaSeconds)
 		AccumulatedDeltaTime += DeltaSeconds;
 
 		// Disable events for player
+		SetReceiveInput(false);
 
 		if (AccumulatedDeltaTime >= DelayToChangeTurn)
 		{
@@ -58,4 +58,10 @@ void ABattleShipPlayerController::ChangeTurn()
 		currentTurn = EBattleShipTurn::IA;
 	else if (currentTurn == EBattleShipTurn::IA)
 		currentTurn = EBattleShipTurn::PLAYER;
+}
+
+void ABattleShipPlayerController::SetReceiveInput(bool bReceiveInput)
+{
+	bEnableClickEvents = bReceiveInput;
+	bEnableMouseOverEvents = bReceiveInput;
 }
