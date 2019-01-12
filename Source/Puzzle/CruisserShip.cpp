@@ -2,13 +2,15 @@
 
 #include "CruisserShip.h"
 
-ACruisserShip::ACruisserShip() : Size(4)
+ACruisserShip::ACruisserShip()
 {
 	// Set Mesh
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
 	ShipMesh->SetupAttachment(RootComponent);
 	ShipMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>
 		(TEXT("StaticMesh'/Game/Geometry/ShipMeshes/Ship4/CruiseLiner'")).Object);
+
+	Size = 4;
 }
 
 void ACruisserShip::DereferenceBlock(ABlock* Block)

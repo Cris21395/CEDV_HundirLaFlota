@@ -2,13 +2,15 @@
 
 #include "SubmarineShip.h"
 
-ASubmarineShip::ASubmarineShip() : Size(3)
+ASubmarineShip::ASubmarineShip()
 {
 	//Set Mesh
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
 	ShipMesh->SetupAttachment(RootComponent);
 	ShipMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>
 		(TEXT("StaticMesh'/Game/Geometry/ShipMeshes/Ship3/submarine'")).Object);
+
+	Size = 3;
 }
 
 void ASubmarineShip::DereferenceBlock(ABlock* Block)
