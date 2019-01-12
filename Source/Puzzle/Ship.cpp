@@ -4,11 +4,8 @@
 #include "EngineMinimal.h"
 
 // Sets default values
-AShip::AShip() 
+AShip::AShip() : isDestroyed(false)
 {
-	//Initialize as not destroyed
-	isDestroyed = false;
-
 	// Save pointer to audio explosion
 	ExplosionParticleSystem = ConstructorHelpers::FObjectFinder<UParticleSystem>
 		(TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion")).Object;

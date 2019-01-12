@@ -2,16 +2,13 @@
 
 #include "CruisserShip.h"
 
-ACruisserShip::ACruisserShip()
+ACruisserShip::ACruisserShip() : Size(4)
 {
 	// Set Mesh
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
 	ShipMesh->SetupAttachment(RootComponent);
 	ShipMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>
 		(TEXT("StaticMesh'/Game/Geometry/ShipMeshes/Ship4/CruiseLiner'")).Object);
-
-	// Set Size
-	Size = 4;
 }
 
 void ACruisserShip::DereferenceBlock(ABlock* Block)
@@ -21,7 +18,9 @@ void ACruisserShip::DereferenceBlock(ABlock* Block)
 
 	int32 BlockIndex = Block->BlockIndex;
 
-	for (int i = 0; i < Size; i++)
+	int32 Length = OccupiedPositions.Num();
+
+	for (int i = 0; i < Length; i++)
 	{
 		int32 Index = OccupiedPositions[i];
 		if (Index == BlockIndex)

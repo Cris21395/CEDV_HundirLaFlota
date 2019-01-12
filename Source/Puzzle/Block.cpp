@@ -88,8 +88,6 @@ void ABlock::HandleClicked()
 
 			// Call delegate if it is bound
 			DereferenceBlockDelegate.ExecuteIfBound(this);
-
-			bHasShip = false;
 		}
 		else
 		{

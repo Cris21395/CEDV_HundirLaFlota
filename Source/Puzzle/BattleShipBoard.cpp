@@ -6,17 +6,11 @@
 #include "EngineMinimal.h"
 
 // Sets default values
-ABattleShipBoard::ABattleShipBoard()
+ABattleShipBoard::ABattleShipBoard() : Size(10), BlockSpacing(115.0f), SizeOfBlock(FVector(0.3f, 0.3f, 0.1f)), bIsBoardClickable(true)
 {
 	// Create dummy root scene component
 	DummyRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Dummy0"));
 	RootComponent = DummyRoot.Get();
-
-	// Default values
-	Size = 10;
-	BlockSpacing = 115.0f;
-	SizeOfBlock = FVector(0.3f, 0.3f, 0.1f);
-	bIsBoardClickable = true;
 }
 
 // Called when the game starts or when spawned
@@ -54,7 +48,7 @@ void ABattleShipBoard::BeginPlay()
 				}
 
 				// Set default values
-				NewBlock->BlockIndex = Index;
+				NewBlock->BlockIndex = Index + 1;
 				NewBlock->bIsActive = false;
 				NewBlock->OwningBoard = this;
 			}

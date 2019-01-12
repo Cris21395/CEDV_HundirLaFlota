@@ -2,16 +2,13 @@
 
 #include "SubmarineShip.h"
 
-ASubmarineShip::ASubmarineShip()
+ASubmarineShip::ASubmarineShip() : Size(3)
 {
 	//Set Mesh
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
 	ShipMesh->SetupAttachment(RootComponent);
 	ShipMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>
 		(TEXT("StaticMesh'/Game/Geometry/ShipMeshes/Ship3/submarine'")).Object);
-
-	//Set Size
-	Size = 3;
 }
 
 void ASubmarineShip::DereferenceBlock(ABlock* Block)
@@ -21,7 +18,9 @@ void ASubmarineShip::DereferenceBlock(ABlock* Block)
 
 	int32 BlockIndex = Block->BlockIndex;
 
-	for (int i = 0; i < Size; i++)
+	int32 Length = OccupiedPositions.Num();
+
+	for (int i = 0; i < Length; i++)
 	{
 		int32 Index = OccupiedPositions[i];
 		if (Index == BlockIndex)

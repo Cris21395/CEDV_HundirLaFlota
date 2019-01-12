@@ -21,7 +21,9 @@ void ABoatShip::DereferenceBlock(ABlock* Block)
 
 	int32 BlockIndex = Block->BlockIndex;
 
-	for (int i = 0; i < Size; i++)
+	int32 Length = OccupiedPositions.Num();
+
+	for (int i = 0; i < Length; i++)
 	{
 		int32 Index = OccupiedPositions[i];
 		if (Index == BlockIndex)

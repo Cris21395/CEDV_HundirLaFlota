@@ -66,8 +66,9 @@ void AShipManager::SpawnRandomShip(ABattleShipBoard* BattleShipBoardPtr, TSubcla
 	int32 RandomIndex = FMath::Rand() % (Size * Size);
 
 	// Get different index when it is not valid
-	while (!IsValidIndex(RandomIndex, BattleShipBoardPtr, ShipType)) {
-		RandomIndex = FMath::Rand() % (Size * Size);	
+	while (!IsValidIndex(RandomIndex, BattleShipBoardPtr, ShipType))
+	{
+		RandomIndex = FMath::Rand() % (Size * Size);
 	}
 
 	// Logic to spawn each ship
@@ -129,14 +130,12 @@ bool AShipManager::IsValidIndex(int32 IndexToCheck, ABattleShipBoard* BattleShip
 int32 AShipManager::GetShipSize(TSubclassOf<AShip> ShipType)
 {
 	int32 Size = 0;
-	if (ShipType->IsChildOf(ABoatShip::StaticClass()))
-		Size = 1;
-	else if (ShipType->IsChildOf(AVesselShip::StaticClass()))
-		Size = 2;
-	else if (ShipType->IsChildOf(ASubmarineShip::StaticClass()))
-		Size = 3;
-	else if (ShipType->IsChildOf(ACruisserShip::StaticClass()))
-		Size = 4;
+
+	if (ShipType->IsChildOf(ABoatShip::StaticClass())) Size = 1;
+	else if (ShipType->IsChildOf(AVesselShip::StaticClass())) Size = 2;
+	else if (ShipType->IsChildOf(ASubmarineShip::StaticClass()))Size = 3;
+	else if (ShipType->IsChildOf(ACruisserShip::StaticClass())) Size = 4;
+
 	return Size;
 }
 
@@ -306,8 +305,7 @@ bool AShipManager::IsEmptyBlock(ABattleShipBoard* BattleShipBoardPtr, int32 Inde
 	if (IndexToCheck >= 0 && IndexToCheck < (Size * Size))
 	{
 		ABlock* Block = BattleShipBoardPtr->GetBlockByIndex(IndexToCheck);
-		if (Block->bHasShip)
-			return !bIsEmpty;
+		if (Block->bHasShip) return !bIsEmpty;
 	}
 
 	return bIsEmpty;
