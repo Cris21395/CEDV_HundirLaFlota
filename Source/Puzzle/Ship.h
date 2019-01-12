@@ -10,6 +10,8 @@
 #include "GameFramework/Actor.h"
 #include "Ship.generated.h"
 
+DECLARE_DELEGATE_OneParam(FShipDelegate, class AShip*);
+
 UCLASS()
 class PUZZLE_API AShip : public AActor 
 {
@@ -34,6 +36,9 @@ public:
 	// Whether the ship has been destroyed or not
 	UPROPERTY()
 		bool isDestroyed;
+
+	// Delegate to know a ship has been destroyed
+	FShipDelegate DestroyedShipDelegate;
 
 protected:
 	// Execute the explosion when a ship has been hit
