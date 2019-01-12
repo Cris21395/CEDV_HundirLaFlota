@@ -81,7 +81,7 @@ void ABlock::HandleClicked()
 		bIsActive = true;
 
 		// If block has a ship, we fire a explosion
-		if (bHasShip)
+		if (OwningShip != nullptr)
 		{
 			// Change material
 			BlockMesh->SetMaterial(0, Transparency_Red_Material.Get());

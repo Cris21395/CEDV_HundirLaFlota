@@ -9,6 +9,7 @@
 #include "Block.generated.h"
 
 class ABattleShipBoard;
+class AShip;
 
 DECLARE_DELEGATE_OneParam(FBlockDelegate, class ABlock*);
 
@@ -35,10 +36,6 @@ public:
 	UPROPERTY()
 		bool bIsActive;
 
-	// Does it have a ship?
-	UPROPERTY()
-		bool bHasShip;
-
 	// Index of Block
 	UPROPERTY()
 		int32 BlockIndex;
@@ -46,6 +43,10 @@ public:
 	// Board that owns this block
 	UPROPERTY()
 		TWeakObjectPtr<ABattleShipBoard> OwningBoard;
+
+	// Ship that owns this block
+	UPROPERTY()
+		TWeakObjectPtr<AShip> OwningShip;
 
 	// Delegate to dereference block when a ship has been hit
 	FBlockDelegate DereferenceBlockDelegate;

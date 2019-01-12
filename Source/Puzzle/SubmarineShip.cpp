@@ -30,6 +30,11 @@ void ASubmarineShip::DereferenceBlock(ABlock* Block)
 			// Remove this position in the array
 			OccupiedPositions.Remove(Index);
 
+			if (OccupiedPositions.Num() == 0)
+			{
+				DestroyedShipDelegate.ExecuteIfBound(this);
+			}
+
 			break;
 		}
 	}
@@ -45,10 +50,10 @@ void ASubmarineShip::SetOccupiedBlocks(int32 SpawnIndex, ABattleShipBoard* Battl
 		// Get the block that holds this ship
 		ABlock* Block = BattleShipBoardPtr->GetBlockByIndex(SpawnIndex + i);
 
+		// This ship owns Block
+		Block->OwningShip = this;
+
 		// Bind the delegate to DereferenceBlock function
 		Block->DereferenceBlockDelegate.BindUObject(this, &ASubmarineShip::DereferenceBlock);
-
-		// Mark the block so that it is known that holds a ship
-		Block->bHasShip = true;
 	}
 }

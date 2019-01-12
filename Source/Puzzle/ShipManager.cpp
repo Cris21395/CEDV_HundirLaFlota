@@ -163,14 +163,14 @@ bool AShipManager::CheckCollisions(int32 IndexToCheck, ABattleShipBoard* BattleS
 
 	if (ShipType->IsChildOf(AVesselShip::StaticClass())) { // Is vertical
 		for (int i = 0; i < Size; i++) {
-			if (BattleShipBoardPtr->GetBlockByIndex(IndexToCheck + BattleShipBoardPtr->Size*i)->bHasShip)
+			if (BattleShipBoardPtr->GetBlockByIndex(IndexToCheck + BattleShipBoardPtr->Size*i)->OwningShip != nullptr)
 				return !bIsValid;	// If the block is already occupied is not valid
 		}
 	}
 	else	// Is Horizontal
 	{
 		for (int i = 0; i < Size; i++) {
-			if (BattleShipBoardPtr->GetBlockByIndex(IndexToCheck + i)->bHasShip)
+			if (BattleShipBoardPtr->GetBlockByIndex(IndexToCheck + i)->OwningShip != nullptr)
 				return !bIsValid;	// If the block is already occupied is not valid
 		}
 	}
@@ -305,7 +305,7 @@ bool AShipManager::IsEmptyBlock(ABattleShipBoard* BattleShipBoardPtr, int32 Inde
 	if (IndexToCheck >= 0 && IndexToCheck < (Size * Size))
 	{
 		ABlock* Block = BattleShipBoardPtr->GetBlockByIndex(IndexToCheck);
-		if (Block->bHasShip) return !bIsEmpty;
+		if (Block->OwningShip != nullptr) return !bIsEmpty;
 	}
 
 	return bIsEmpty;
