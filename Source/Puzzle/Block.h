@@ -73,6 +73,10 @@ private:
 	UPROPERTY()
 		TWeakObjectPtr<UMaterialInstance> Transparency_Red_Material;
 
+	// Pointer to audio used when block has been clicked and does not hold a ship
+	UPROPERTY()
+		TWeakObjectPtr<USoundBase> AudioSplashWater;
+
 	// Handle the block being clicked
 	UFUNCTION()
 		void BlockClicked(UPrimitiveComponent* ClickedComp, FKey ButtonClicked);

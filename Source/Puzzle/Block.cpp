@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Block.h"
+#include "EngineMinimal.h"
 #include "BattleShipBoard.h"
 #include "BattleShipPlayerController.h"
 #include "UObject/ConstructorHelpers.h"
@@ -18,12 +19,14 @@ ABlock::ABlock()
 		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Blue_Material;
 		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Yellow_Material;
 		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Red_Material;
+		ConstructorHelpers::FObjectFinderOptional<USoundBase> Audio_Splash_Water;
 		FConstructorStatics()
 			: PlaneMesh(TEXT("/Game/Geometry/CubeMeshes/Cube.Cube"))
 			, Transparency_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Material.Transparency_Material"))
 			, Transparency_Blue_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Blue_Material_Inst.Transparency_Blue_Material_Inst"))
 			, Transparency_Yellow_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Orange_Material_Inst.Transparency_Orange_Material_Inst"))
 			, Transparency_Red_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Red_Material_Inst.Transparency_Red_Material_Inst"))
+			, Audio_Splash_Water(TEXT("/Game/Audio/Splash_Water.Splash_Water"))
 		{
 		}
 	};
@@ -46,6 +49,9 @@ ABlock::ABlock()
 	Transparency_Blue_Material = ConstructorStatics.Transparency_Blue_Material.Get();
 	Transparency_Yellow_Material = ConstructorStatics.Transparency_Yellow_Material.Get();
 	Transparency_Red_Material = ConstructorStatics.Transparency_Red_Material.Get();
+
+	// Save pointer to this audio
+	AudioSplashWater = ConstructorStatics.Audio_Splash_Water.Get();
 }
 
 void ABlock::ReceiveInputFromMouse()
@@ -93,6 +99,9 @@ void ABlock::HandleClicked()
 		{
 			// Change material
 			BlockMesh->SetMaterial(0, Transparency_Material.Get());
+
+			// Play splash water audio
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), AudioSplashWater.Get(), GetActorLocation());
 
 			// Change turn when player has not hit a ship
 			PlayerController->ChangeTurn();
