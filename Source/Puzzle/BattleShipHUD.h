@@ -27,6 +27,9 @@ private:
 	TWeakObjectPtr<class UTextBlock> txtScorePlayer;
 	TWeakObjectPtr<class UTextBlock> txtScoreOpponent;
 	class UClass* pPermanentHUDWidgetClass;
+
+	TWeakObjectPtr<class UUserWidget> pDestroyedShipWidget;
+	class UClass* pDestroyedShipWidgetClass;
 	
 	void DestroyedShipDelegateHandler(AShip* Ship);
 };

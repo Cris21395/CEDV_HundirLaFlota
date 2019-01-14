@@ -15,6 +15,13 @@ ABattleShipHUD::ABattleShipHUD() : playerDestroyedShips(0), opponentDestroyedShi
 	} else {
 		pPermanentHUDWidgetClass = nullptr;
 	}
+	static ConstructorHelpers::FClassFinder<UUserWidget> hudWidgetObj(TEXT("WidgetBlueprint'/Game/Blueprints/UI/HUD/BP_PermanentHUD'"));
+	if (hudWidgetObj.Succeeded()) {
+		pDestroyedShipWidgetClass = hudWidgetObj.Class;
+	}
+	else {
+		pDestroyedShipWidgetClass = nullptr;
+	}
 }
 
 void ABattleShipHUD::BeginPlay() {
@@ -27,7 +34,7 @@ void ABattleShipHUD::BeginPlay() {
 	// Get textblock
 	txtScorePlayer = (UTextBlock*)pPermanentHUDWidget->GetWidgetFromName("txtScorePlayer");
 	txtScoreOpponent = (UTextBlock*)pPermanentHUDWidget->GetWidgetFromName("txtScoreOpponent");
-	//(LogTemp, Log, TEXT("--------[HUD] >> -----------\n\n\n"));
+
 
 	// Bind delegates to handler funtion
 	for (TActorIterator<AShip> ActorItr(GetWorld()); ActorItr; ++ActorItr)
@@ -42,5 +49,7 @@ void ABattleShipHUD::DestroyedShipDelegateHandler(AShip* Ship) {
 	playerDestroyedShips += 1;
 	txtScorePlayer->SetText(FText::FromString(FString::FromInt(playerDestroyedShips)));
 	UE_LOG(LogTemp, Log, TEXT("--------[HUD] >> %s-----------\n\n\n"), playerDestroyedShips + "/4");
+
+	// Add DestroyedShipWidget
 }
 
