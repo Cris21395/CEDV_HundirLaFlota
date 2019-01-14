@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+#include "Ship.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
@@ -16,6 +17,16 @@ class PUZZLE_API ABattleShipHUD : public AHUD
 
 public:
 	ABattleShipHUD();
+	void BeginPlay() override;
 	
+private:
+	int playerDestroyedShips;
+	int opponentDestroyedShips;
+
+	TWeakObjectPtr<class UUserWidget> pPermanentHUDWidget;
+	TWeakObjectPtr<class UTextBlock> txtScorePlayer;
+	TWeakObjectPtr<class UTextBlock> txtScoreOpponent;
+	class UClass* pPermanentHUDWidgetClass;
 	
+	void DestroyedShipDelegateHandler(AShip* Ship);
 };
