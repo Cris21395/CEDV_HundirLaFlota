@@ -9,10 +9,29 @@
 
 ABattleShipHUD::ABattleShipHUD() : playerDestroyedShips(0), opponentDestroyedShips(0)
 {
+	/*
+	struct FConstructorStatics
+	{
+		ConstructorHelpers::FClassFinder<UUserWidget> PermanentHUDWidgetObject;
+		ConstructorHelpers::FClassFinder<UUserWidget> DestroyedShipHUDWidgetObject;
+		FConstructorStatics()
+			: PermanentHUDWidgetObject(TEXT("/Game/Blueprints/UI/HUD/BP_PermanentHUD"))
+			, DestroyedShipHUDWidgetObject(TEXT("/Game/Blueprints/UI/HUD/BP_DestroyedShipWidget"))
+		{
+		}
+	};
+	static FConstructorStatics ConstructorStatics;
+
+	// Save pointer to widgets
+	pPermanentHUDWidgetClass = ConstructorStatics.PermanentHUDWidgetObject.Class;
+	pDestroyedShipWidgetClass = ConstructorStatics.DestroyedShipHUDWidgetObject.Class;
+	*/
+
 	static ConstructorHelpers::FClassFinder<UUserWidget> hudWidgetObj(TEXT("WidgetBlueprint'/Game/Blueprints/UI/HUD/BP_PermanentHUD'"));
 	if (hudWidgetObj.Succeeded()) {
 		pPermanentHUDWidgetClass = hudWidgetObj.Class;
-	} else {
+	}
+	else {
 		pPermanentHUDWidgetClass = nullptr;
 	}
 	static ConstructorHelpers::FClassFinder<UUserWidget> hudWidgetObj(TEXT("WidgetBlueprint'/Game/Blueprints/UI/HUD/BP_PermanentHUD'"));
@@ -27,10 +46,12 @@ ABattleShipHUD::ABattleShipHUD() : playerDestroyedShips(0), opponentDestroyedShi
 void ABattleShipHUD::BeginPlay() {
 
 	// Add permanent HUD to viewport
-	if (pPermanentHUDWidgetClass) {
+	if (pPermanentHUDWidgetClass) 
+	{
 		pPermanentHUDWidget = CreateWidget<UUserWidget>(this->GetOwningPlayerController(), this->pPermanentHUDWidgetClass);
 		pPermanentHUDWidget->AddToViewport();
 	}
+
 	// Get textblock
 	txtScorePlayer = (UTextBlock*)pPermanentHUDWidget->GetWidgetFromName("txtScorePlayer");
 	txtScoreOpponent = (UTextBlock*)pPermanentHUDWidget->GetWidgetFromName("txtScoreOpponent");
