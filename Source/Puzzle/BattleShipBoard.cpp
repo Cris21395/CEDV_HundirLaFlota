@@ -48,7 +48,7 @@ void ABattleShipBoard::BeginPlay()
 				}
 
 				// Set default values
-				NewBlock->BlockIndex = Index + 1;
+				NewBlock->BlockIndex = Index;
 				NewBlock->bIsActive = false;
 				NewBlock->OwningBoard = this;
 			}
