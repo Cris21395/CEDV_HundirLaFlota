@@ -20,11 +20,19 @@ public:
 
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
+
+	// Called when the turn changes
+	void ChangeTurn();
 	
 private:
-	TWeakObjectPtr<ABattleShipBoard> pPlayerBoard;
-	TWeakObjectPtr<ABattleShipBoard> pOpponentBoard;
 
+	// Pointer to player board
+	TWeakObjectPtr<ABattleShipBoard> PlayerBoardPtr;
+
+	// Pointer to opponent board
+	TWeakObjectPtr<ABattleShipBoard> OpponentBoardPtr;
+
+	// Destroyed ships of the player
 	int playerDestroyedShips;
 
 	// Destroyed ships of the opponent
@@ -46,6 +54,10 @@ private:
 	UPROPERTY()
 		TWeakObjectPtr<class UTextBlock> txtScorePlayer;
 
+	// Pointer to txtTurno
+	UPROPERTY()
+		TWeakObjectPtr<class UTextBlock> txtTurno;
+
 	// Pointer to permanent HUD widget class
 	class UClass* pPermanentHUDWidgetClass;
 
@@ -54,4 +66,7 @@ private:
 	
 	// Called when a ship has been destroyed
 	void DestroyedShipDelegateHandler(AShip* Ship);
+
+	// Checks if the ship is in that board
+	bool IsShipInBoard(AShip* Ship, TWeakObjectPtr<ABattleShipBoard> Board);
 };

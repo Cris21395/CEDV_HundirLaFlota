@@ -1,5 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "BattleShipPlayerController.h"
+#include "BattleShipTurn.h"
 #include "BattleShipHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "TextWidgetTypes.h"
@@ -9,31 +11,15 @@
 
 ABattleShipHUD::ABattleShipHUD() : playerDestroyedShips(0), opponentDestroyedShips(0)
 {
-	/*
-	struct FConstructorStatics
-	{
-		ConstructorHelpers::FClassFinder<UUserWidget> PermanentHUDWidgetObject;
-		ConstructorHelpers::FClassFinder<UUserWidget> DestroyedShipHUDWidgetObject;
-		FConstructorStatics()
-			: PermanentHUDWidgetObject(TEXT("/Game/Blueprints/UI/HUD/BP_PermanentHUD"))
-			, DestroyedShipHUDWidgetObject(TEXT("/Game/Blueprints/UI/HUD/BP_DestroyedShipWidget"))
-		{
-		}
-	};
-	static FConstructorStatics ConstructorStatics;
-
-	// Save pointer to widgets
-	pPermanentHUDWidgetClass = ConstructorStatics.PermanentHUDWidgetObject.Class;
-	pDestroyedShipWidgetClass = ConstructorStatics.DestroyedShipHUDWidgetObject.Class;
-	*/
-
-	static ConstructorHelpers::FClassFinder<UUserWidget> hudWidgetObj(TEXT("WidgetBlueprint'/Game/Blueprints/UI/HUD/BP_PermanentHUD'"));
-	if (hudWidgetObj.Succeeded()) {
-		pPermanentHUDWidgetClass = hudWidgetObj.Class;
+	// Get the permanent HUD 
+	static ConstructorHelpers::FClassFinder<UUserWidget> permanenthudWidgetObj(TEXT("WidgetBlueprint'/Game/Blueprints/UI/HUD/BP_PermanentHUD'"));
+	if (permanenthudWidgetObj.Succeeded()) {
+		pPermanentHUDWidgetClass = permanenthudWidgetObj.Class;
 	}
 	else {
 		pPermanentHUDWidgetClass = nullptr;
 	}
+	// get the destroyed ship HUD
 	static ConstructorHelpers::FClassFinder<UUserWidget> hudWidgetObj(TEXT("WidgetBlueprint'/Game/Blueprints/UI/HUD/BP_PermanentHUD'"));
 	if (hudWidgetObj.Succeeded()) {
 		pDestroyedShipWidgetClass = hudWidgetObj.Class;
@@ -55,22 +41,69 @@ void ABattleShipHUD::BeginPlay() {
 	// Get textblock
 	txtScorePlayer = (UTextBlock*)pPermanentHUDWidget->GetWidgetFromName("txtScorePlayer");
 	txtScoreOpponent = (UTextBlock*)pPermanentHUDWidget->GetWidgetFromName("txtScoreOpponent");
+	txtTurno = (UTextBlock*)pPermanentHUDWidget->GetWidgetFromName("txtTurno");
 
+	// Get pointers to boards
+	for (TActorIterator<ABattleShipBoard> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+		// Clickable means that the board belongs to the player
+		if (ActorItr->bIsBoardClickable) {
+			PlayerBoardPtr = *ActorItr;
+		}
+		else {
+			OpponentBoardPtr = *ActorItr;
+		}
+	}
 
 	// Bind delegates to handler funtion
 	for (TActorIterator<AShip> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		ActorItr->DestroyedShipDelegate.BindUObject(this, &ABattleShipHUD::DestroyedShipDelegateHandler);
-		UE_LOG(LogTemp, Log, TEXT("--------[HUD] >> BIND SHIP sized %d -----------\n\n\n"), ActorItr->Size);
+	}
+}
+
+void ABattleShipHUD::ChangeTurn()
+{
+	ABattleShipPlayerController* PlayerController = Cast<ABattleShipPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PlayerController->currentTurn == EBattleShipTurn::PLAYER) {
+		txtTurno->SetText(FText::FromString("Player"));
+	}
+	else if(PlayerController->currentTurn == EBattleShipTurn::IA){
+		txtTurno->SetText(FText::FromString("Opponent"));
 	}
 }
 
 void ABattleShipHUD::DestroyedShipDelegateHandler(AShip* Ship) {
-	
-	playerDestroyedShips += 1;
-	txtScorePlayer->SetText(FText::FromString(FString::FromInt(playerDestroyedShips)));
-	UE_LOG(LogTemp, Log, TEXT("--------[HUD] >> %s-----------\n\n\n"), playerDestroyedShips + "/4");
 
 	// Add DestroyedShipWidget
+	if (IsShipInBoard(Ship, PlayerBoardPtr)) {
+		playerDestroyedShips += 1;
+		txtScorePlayer->SetText(FText::FromString(FString::FromInt(playerDestroyedShips) + "/4"));
+		UE_LOG(LogTemp, Log, TEXT("--------[HUD] >> InPlayer -----------\n\n\n"));
+	}
+	else
+	if(IsShipInBoard(Ship, OpponentBoardPtr)) {
+		playerDestroyedShips += 1;
+		txtScorePlayer->SetText(FText::FromString(FString::FromInt(playerDestroyedShips) + "/4"));
+		UE_LOG(LogTemp, Log, TEXT("--------[HUD] >> InOpponent -----------\n\n\n"));
+	}
+	else {
+		UE_LOG(LogTemp, Log, TEXT("--------[HUD] >> SHIP NOT FOUND -----------\n\n\n"));
+	}
+	
+}
+
+bool ABattleShipHUD::IsShipInBoard(AShip * Ship, TWeakObjectPtr<ABattleShipBoard> Board)
+{
+	TArray<TSubclassOf<AShip>> ShipsToCheck = Board->Ships;
+	UE_LOG(LogTemp, Log, TEXT("--------[HUD] >> Ehhhhhhh HOLA -----------\n\n\n"));
+	for (auto& ShipToCheck : ShipsToCheck) {
+		AShip* ShipToCheckActor = (AShip*)ShipToCheck.Get();
+		UE_LOG(LogTemp, Log, TEXT("--------[HUD] >> %d %d %d -- %d %d %d -----------\n\n\n"), Ship->GetTransform().GetLocation().X, Ship->GetTransform().GetLocation().Y, Ship->GetTransform().GetLocation().Z, ShipToCheckActor->GetTransform().GetLocation().X, ShipToCheckActor->GetTransform().GetLocation().Y, ShipToCheckActor->GetTransform().GetLocation().Z);
+		if (Ship->GetTransform().GetLocation().Equals(ShipToCheckActor->GetTransform().GetLocation()))
+		//if(ShipToCheck.Get() == (UObject*)Ship)
+			return true;
+	}
+
+	return false;
 }
 

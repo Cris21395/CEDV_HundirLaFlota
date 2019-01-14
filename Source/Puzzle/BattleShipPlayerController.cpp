@@ -3,7 +3,7 @@
 #include "BattleShipPlayerController.h"
 #include "EngineUtils.h"
 
-ABattleShipPlayerController::ABattleShipPlayerController() : DelayToChangeTurn(3), AccumulatedDeltaTime(0)
+ABattleShipPlayerController::ABattleShipPlayerController() : DelayToChangeTurn(1), AccumulatedDeltaTime(0)
 {
 	bShowMouseCursor = true;
 }

@@ -2,6 +2,7 @@
 
 #include "Block.h"
 #include "EngineMinimal.h"
+#include "BattleShipHUD.h"
 #include "BattleShipBoard.h"
 #include "BattleShipPlayerController.h"
 #include "UObject/ConstructorHelpers.h"
@@ -80,6 +81,7 @@ void ABlock::BlockEndMouseOver(UPrimitiveComponent * MouseOverComp)
 void ABlock::HandleClicked()
 {
 	ABattleShipPlayerController* PlayerController = Cast<ABattleShipPlayerController>(GetWorld()->GetFirstPlayerController());
+	ABattleShipHUD* HUD = Cast<ABattleShipHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 
 	// Check we are not already active
 	if (!bIsActive)
@@ -105,6 +107,7 @@ void ABlock::HandleClicked()
 
 			// Change turn when player has not hit a ship
 			PlayerController->ChangeTurn();
+			HUD->ChangeTurn();
 		}
 	}
 }
