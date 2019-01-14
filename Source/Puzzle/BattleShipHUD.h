@@ -22,7 +22,9 @@ public:
 	void BeginPlay() override;
 	
 private:
-	// Destroyed ships of the player
+	TWeakObjectPtr<ABattleShipBoard> pPlayerBoard;
+	TWeakObjectPtr<ABattleShipBoard> pOpponentBoard;
+
 	int playerDestroyedShips;
 
 	// Destroyed ships of the opponent
