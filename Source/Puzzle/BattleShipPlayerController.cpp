@@ -2,6 +2,7 @@
 
 #include "BattleShipPlayerController.h"
 #include "EngineUtils.h"
+#include "EngineMinimal.h"
 
 ABattleShipPlayerController::ABattleShipPlayerController() : DelayToChangeTurn(1), AccumulatedDeltaTime(0)
 {
@@ -45,8 +46,9 @@ void ABattleShipPlayerController::Tick(float DeltaSeconds)
 	}
 
 	// The game have finished
-	else {
-
+	else if(currentTurn == EBattleShipTurn::NONE){
+		// Open new level
+		UGameplayStatics::OpenLevel(GetWorld(), TEXT("/Game/Maps/Records"), TRAVEL_Absolute);
 	}
 
 	
@@ -58,6 +60,12 @@ void ABattleShipPlayerController::ChangeTurn()
 		currentTurn = EBattleShipTurn::IA;
 	else if (currentTurn == EBattleShipTurn::IA)
 		currentTurn = EBattleShipTurn::PLAYER;
+}
+
+void ABattleShipPlayerController::FinishGame()
+{
+	winner = currentTurn;
+	currentTurn = EBattleShipTurn::NONE;
 }
 
 void ABattleShipPlayerController::SetReceiveInput(bool bReceiveInput)

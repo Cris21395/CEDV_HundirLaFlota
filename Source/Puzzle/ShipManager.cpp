@@ -113,6 +113,8 @@ void AShipManager::SpawnRandomShip(ABattleShipBoard* BattleShipBoardPtr, TSubcla
 	}
 
 	NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr);
+	//**** WE NEED TO ADD THE SHIPS TO THE BOARD CORRECTLY ***//
+	//BattleShipBoardPtr->Ships.Add(TSubclassOf<AShip>(NewShip));
 }
 
 bool AShipManager::IsValidIndex(int32 IndexToCheck, ABattleShipBoard* BattleShipBoardPtr, TSubclassOf<AShip> ShipType)

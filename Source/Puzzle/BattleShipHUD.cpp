@@ -95,11 +95,11 @@ void ABattleShipHUD::DestroyedShipDelegateHandler(AShip* Ship) {
 bool ABattleShipHUD::IsShipInBoard(AShip * Ship, TWeakObjectPtr<ABattleShipBoard> Board)
 {
 	TArray<TSubclassOf<AShip>> ShipsToCheck = Board->Ships;
-	UE_LOG(LogTemp, Log, TEXT("--------[HUD] >> Ehhhhhhh HOLA -----------\n\n\n"));
+	UE_LOG(LogTemp, Log, TEXT("--------[HUD] >> Ehhhhhhh HOLA %d-----------\n\n\n"), ShipsToCheck.Num());
 	for (auto& ShipToCheck : ShipsToCheck) {
-		AShip* ShipToCheckActor = (AShip*)ShipToCheck.Get();
+		AShip* ShipToCheckActor = ShipToCheck.GetDefaultObject();
 		UE_LOG(LogTemp, Log, TEXT("--------[HUD] >> %d %d %d -- %d %d %d -----------\n\n\n"), Ship->GetTransform().GetLocation().X, Ship->GetTransform().GetLocation().Y, Ship->GetTransform().GetLocation().Z, ShipToCheckActor->GetTransform().GetLocation().X, ShipToCheckActor->GetTransform().GetLocation().Y, ShipToCheckActor->GetTransform().GetLocation().Z);
-		if (Ship->GetTransform().GetLocation().Equals(ShipToCheckActor->GetTransform().GetLocation()))
+		if (ShipToCheckActor == Ship)
 		//if(ShipToCheck.Get() == (UObject*)Ship)
 			return true;
 	}

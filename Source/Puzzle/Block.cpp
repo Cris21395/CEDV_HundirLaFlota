@@ -4,6 +4,7 @@
 #include "EngineMinimal.h"
 #include "BattleShipHUD.h"
 #include "BattleShipBoard.h"
+#include "BattleShipGameModeBase.h"
 #include "BattleShipPlayerController.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/StaticMeshComponent.h"
@@ -105,9 +106,21 @@ void ABlock::HandleClicked()
 			// Play splash water audio
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), AudioSplashWater.Get(), GetActorLocation());
 
-			// Change turn when player has not hit a ship
-			PlayerController->ChangeTurn();
-			HUD->ChangeTurn();
+			// Checks win conditions
+			ABattleShipGameModeBase* GameMode = Cast<ABattleShipGameModeBase>(GetWorld()->GetAuthGameMode());
+			// If you win
+			if (GameMode->HasWon(OwningBoard.Get())) {
+				UE_LOG(LogTemp, Log, TEXT("--------[BLOCK] >> WINNER FOUND -----------\n\n\n"));
+				PlayerController->FinishGame();
+			}
+			else
+			{
+				// Change turn when player has not hit a ship
+				PlayerController->ChangeTurn();
+				HUD->ChangeTurn();
+			}
+
+			
 		}
 	}
 }

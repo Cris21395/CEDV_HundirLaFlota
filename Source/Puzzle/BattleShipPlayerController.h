@@ -30,8 +30,14 @@ public:
 	// The turn that is playing now is stored
 	EBattleShipTurn currentTurn;
 
+	// Stored the winner when the game is finished, null otherwise
+	EBattleShipTurn winner;
+
 	// Function called in block after a click to change the turn
 	void ChangeTurn();
+
+	// Function that set the turn to NONE which means the game has ended
+	void FinishGame();
 
 private:
 	// Countdown for changing the turn
