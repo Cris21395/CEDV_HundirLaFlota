@@ -4,6 +4,8 @@
 #include "BattleShipPlayerController.h"
 #include "BattleShipTurn.h"
 #include "Ship.h"
+#include "SlateColor.h"
+#include "WidgetAnimation.h"
 #include "Blueprint/UserWidget.h"
 #include "TextWidgetTypes.h"
 #include "TextBlock.h"
@@ -62,10 +64,12 @@ void ABattleShipHUD::ChangeTurn()
 
 	if (PlayerController->currentTurn == EBattleShipTurn::PLAYER) 
 	{
+		txtTurn->SetColorAndOpacity(FSlateColor::FSlateColor(FLinearColor::FLinearColor(FVector::FVector(0.0f, 0.7f, 0.0f))));
 		txtTurn->SetText(FText::FromString(PLAYER_GAME));
 	}
 	else if(PlayerController->currentTurn == EBattleShipTurn::IA)
 	{
+		txtTurn->SetColorAndOpacity(FSlateColor::FSlateColor(FLinearColor::FLinearColor(FVector::FVector(0.7f, 0.0f, 0.0f))));
 		txtTurn->SetText(FText::FromString(OPPONENT_GAME));
 	}
 }
@@ -91,6 +95,12 @@ void ABattleShipHUD::DestroyedShipDelegateHandler(AShip* Ship)
 			FString::FromInt(opponentDestroyedShips) +
 			"/" +
 			FString::FromInt(NumberOfShips)));
+	}
+
+	// Show visual animated notification of destroyed ship
+	if (pDestroyedShipWidgetClass) {
+		pDestroyedShipWidget = CreateWidget<UUserWidget>(this->GetOwningPlayerController(), this->pDestroyedShipWidgetClass);
+		pDestroyedShipWidget->AddToViewport();
 	}
 }
 
