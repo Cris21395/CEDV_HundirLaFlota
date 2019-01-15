@@ -21,6 +21,8 @@ ABlock::ABlock()
 		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Blue_Material;
 		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Yellow_Material;
 		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> Transparency_Red_Material;
+		ConstructorHelpers::FObjectFinderOptional<UParticleSystem> Explosion_Particle_System;
+		ConstructorHelpers::FObjectFinderOptional<USoundBase> Audio_Explosion;
 		ConstructorHelpers::FObjectFinderOptional<USoundBase> Audio_Splash_Water;
 		FConstructorStatics()
 			: PlaneMesh(TEXT("/Game/Geometry/CubeMeshes/Cube.Cube"))
@@ -28,6 +30,8 @@ ABlock::ABlock()
 			, Transparency_Blue_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Blue_Material_Inst.Transparency_Blue_Material_Inst"))
 			, Transparency_Yellow_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Orange_Material_Inst.Transparency_Orange_Material_Inst"))
 			, Transparency_Red_Material(TEXT("/Game/Geometry/CubeMeshes/Transparency_Red_Material_Inst.Transparency_Red_Material_Inst"))
+			, Explosion_Particle_System(TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion"))
+			, Audio_Explosion(TEXT("/Game/StarterContent/Audio/Explosion01.Explosion01"))
 			, Audio_Splash_Water(TEXT("/Game/Audio/Splash_Water.Splash_Water"))
 		{
 		}
@@ -53,6 +57,8 @@ ABlock::ABlock()
 	Transparency_Red_Material = ConstructorStatics.Transparency_Red_Material.Get();
 
 	// Save pointer to this audio
+	ExplosionParticleSystem = ConstructorStatics.Explosion_Particle_System.Get();
+	AudioExplosion = ConstructorStatics.Audio_Explosion.Get();
 	AudioSplashWater = ConstructorStatics.Audio_Splash_Water.Get();
 }
 
@@ -82,6 +88,7 @@ void ABlock::BlockEndMouseOver(UPrimitiveComponent * MouseOverComp)
 void ABlock::HandleClicked()
 {
 	ABattleShipPlayerController* PlayerController = Cast<ABattleShipPlayerController>(GetWorld()->GetFirstPlayerController());
+	ABattleShipGameModeBase* GameMode = Cast<ABattleShipGameModeBase>(GetWorld()->GetAuthGameMode());
 	ABattleShipHUD* HUD = Cast<ABattleShipHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 
 	// Check we are not already active
@@ -95,6 +102,12 @@ void ABlock::HandleClicked()
 			// Change material
 			BlockMesh->SetMaterial(0, Transparency_Red_Material.Get());
 
+			// Play exploison audio
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), AudioExplosion.Get(), GetActorLocation());
+
+			// Fire explosion
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticleSystem.Get(), GetActorLocation());
+
 			// Call delegate if it is bound
 			DereferenceBlockDelegate.ExecuteIfBound(this);
 		}
@@ -106,21 +119,15 @@ void ABlock::HandleClicked()
 			// Play splash water audio
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), AudioSplashWater.Get(), GetActorLocation());
 
-			// Checks win conditions
-			ABattleShipGameModeBase* GameMode = Cast<ABattleShipGameModeBase>(GetWorld()->GetAuthGameMode());
-			// If you win
-			if (GameMode->HasWon(OwningBoard.Get())) {
-				UE_LOG(LogTemp, Log, TEXT("--------[BLOCK] >> WINNER FOUND -----------\n\n\n"));
-				PlayerController->FinishGame();
-			}
-			else
-			{
-				// Change turn when player has not hit a ship
-				PlayerController->ChangeTurn();
-				HUD->ChangeTurn();
-			}
+			// Change turn when player has not hit a ship
+			PlayerController->ChangeTurn();
+			HUD->ChangeTurn();
+		}
 
-			
+		// If you win
+		if (GameMode->HasWon(OwningBoard.Get()))
+		{
+			PlayerController->FinishGame();
 		}
 	}
 }

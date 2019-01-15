@@ -4,7 +4,7 @@
 #include "EngineUtils.h"
 #include "EngineMinimal.h"
 
-ABattleShipPlayerController::ABattleShipPlayerController() : DelayToChangeTurn(1), AccumulatedDeltaTime(0)
+ABattleShipPlayerController::ABattleShipPlayerController() : DelayToChangeTurn(2), AccumulatedDeltaTime(0), DelayToFinishGame(2)
 {
 	bShowMouseCursor = true;
 }
@@ -23,15 +23,16 @@ void ABattleShipPlayerController::BeginPlay()
 
 void ABattleShipPlayerController::Tick(float DeltaSeconds)
 {
-	// If it's the player turn
-	if (currentTurn == EBattleShipTurn::PLAYER) 
+	switch (currentTurn)
 	{
+	case EBattleShipTurn::PLAYER:
+
 		// Enable events for player
 		SetReceiveInput(true);
-	} 
-	// If it's the machine turn
-	else if (currentTurn == EBattleShipTurn::IA)
-	{
+
+		break;
+	case EBattleShipTurn::IA:
+
 		AccumulatedDeltaTime += DeltaSeconds;
 
 		// Disable events for player
@@ -43,15 +44,22 @@ void ABattleShipPlayerController::Tick(float DeltaSeconds)
 
 			AccumulatedDeltaTime = 0.0f;
 		}
-	}
 
-	// The game have finished
-	else if(currentTurn == EBattleShipTurn::NONE){
+		break;
+	case EBattleShipTurn::NONE:
+
+		AccumulatedDeltaTime += DeltaSeconds;
+
 		// Open new level
-		UGameplayStatics::OpenLevel(GetWorld(), TEXT("/Game/Maps/Records"), TRAVEL_Absolute);
-	}
+		if (AccumulatedDeltaTime >= DelayToFinishGame)
+		{
+			UGameplayStatics::OpenLevel(GetWorld(), TEXT("/Game/Maps/Records"), TRAVEL_Absolute);
 
-	
+			AccumulatedDeltaTime = 0.0f;
+		}
+
+		break;
+	}
 }
 
 void ABattleShipPlayerController::ChangeTurn()

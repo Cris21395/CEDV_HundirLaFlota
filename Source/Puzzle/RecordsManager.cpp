@@ -25,19 +25,19 @@ void ARecordsManager::BeginPlay()
 	}
 }
 
-TMap<FString, float> ARecordsManager::GetRecords() const
+TMap<FString, int> ARecordsManager::GetRecords() const
 {
 	return BattleShipSaveGamePtr->Records;
 }
 
 
-void ARecordsManager::SaveNewRecord(FString PlayerName, float Duration)
+void ARecordsManager::SaveNewRecord(FString PlayerName, int HitShips)
 {
 	// Add a new record
-	BattleShipSaveGamePtr->Records.Add(PlayerName, Duration);
+	BattleShipSaveGamePtr->Records.Add(PlayerName, HitShips);
 
 	// Order the TMap regarding the max duration
-	BattleShipSaveGamePtr->Records.ValueSort([](const float& A, const float& B)
+	BattleShipSaveGamePtr->Records.ValueSort([](const int& A, const int& B)
 	{
 		return A < B;
 	});

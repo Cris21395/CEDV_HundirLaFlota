@@ -40,13 +40,13 @@ public:
 	UPROPERTY()
 		int32 BlockIndex;
 
-	// Board that owns this block
-	UPROPERTY()
-		TWeakObjectPtr<ABattleShipBoard> OwningBoard;
-
 	// Ship that owns this block
 	UPROPERTY()
 		TWeakObjectPtr<AShip> OwningShip;
+
+	// Board that owns this block
+	UPROPERTY()
+		TWeakObjectPtr<ABattleShipBoard> OwningBoard;
 
 	// Delegate to dereference block when a ship has been hit
 	FBlockDelegate DereferenceBlockDelegate;
@@ -72,6 +72,14 @@ private:
 	// Pointer to red material used on the focused block that has been hit
 	UPROPERTY()
 		TWeakObjectPtr<UMaterialInstance> Transparency_Red_Material;
+
+	// Pointer to explosion used to be fired when a ship has been hit
+	UPROPERTY()
+		TWeakObjectPtr<UParticleSystem> ExplosionParticleSystem;
+
+	// Pointer to audio explosion used to be played along ExplosionParticleSystem
+	UPROPERTY()
+		TWeakObjectPtr<USoundBase> AudioExplosion;
 
 	// Pointer to audio used when block has been clicked and does not hold a ship
 	UPROPERTY()

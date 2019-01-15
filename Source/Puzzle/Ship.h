@@ -21,9 +21,14 @@ public:
 	// Sets default values for this actor's properties
 	AShip();
 
+	// Whether the ship has been destroyed or not
+	bool isDestroyed;
+
 	// Size of ship
-	UPROPERTY()
-		int32 Size;
+	int32 Size;
+
+	// Delegate to know a ship has been destroyed
+	FShipDelegate DestroyedShipDelegate;
 
 	// Pointer to static mesh
 	UPROPERTY()
@@ -33,26 +38,7 @@ public:
 	UPROPERTY()
 		TArray<int32> OccupiedPositions;
 
-	// Whether the ship has been destroyed or not
-	UPROPERTY()
-		bool isDestroyed;
-
-	// Delegate to know a ship has been destroyed
-	FShipDelegate DestroyedShipDelegate;
-
-protected:
-	// Execute the explosion when a ship has been hit
-	void FireExplosionIfItIsHit(ABlock* Block);
-
 private:
-	// Pointer to explosion used to be fired when a ship has been hit
-	UPROPERTY()
-		TWeakObjectPtr<UParticleSystem> ExplosionParticleSystem;
-
-	// Pointer to audio explosion used to be played along ExplosionParticleSystem
-	UPROPERTY()
-		TWeakObjectPtr<USoundBase> AudioExplosion;
-
 	// Override in children to dereference the block which holds a ship
 	virtual void DereferenceBlock(ABlock* Block) PURE_VIRTUAL(AShip::DereferenceBlock, );
 

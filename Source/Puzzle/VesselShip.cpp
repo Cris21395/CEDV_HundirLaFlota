@@ -15,9 +15,6 @@ AVesselShip::AVesselShip()
 
 void AVesselShip::DereferenceBlock(ABlock* Block)
 {
-	// Fire explosion
-	FireExplosionIfItIsHit(Block);
-
 	int32 BlockIndex = Block->BlockIndex;
 
 	int32 Length = OccupiedPositions.Num();

@@ -56,30 +56,6 @@ void ABattleShipBoard::BeginPlay()
 	}
 }
 
-bool ABattleShipBoard::AreAllShipsDestroyed()
-{
-	// Num of ships in the array
-	int NumElements = Ships.Num();
-
-	// Num of arrays that do not have positions in the board
-	int EmptyArrays = 0;
-
-	for (auto& TypeShip : Ships)
-	{
-		// If array OccupiedPositions is empty, 
-		// we increment the variable EmptyArrays
-		AShip* Ship = TypeShip.GetDefaultObject();
-		if (Ship->OccupiedPositions.Num() == 0)
-		{
-			EmptyArrays++;
-		}
-	}
-
-	// If both variable have the same number
-	// all ships have been destroyed
-	return EmptyArrays == NumElements;
-}
-
 ABlock * ABattleShipBoard::GetBlockByIndex(int32 Index) const
 {
 	ABlock* Block = Cast<ABlock>(RootComponent->GetChildComponent(Index)->GetOwner());

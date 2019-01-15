@@ -41,12 +41,13 @@ public:
 
 private:
 	// Countdown for changing the turn
-	UPROPERTY()
-		float DelayToChangeTurn;
+	float DelayToChangeTurn;
+
+	// Countdown for finishing the game
+	float DelayToFinishGame;
 
 	// Time spent during robot turn
-	UPROPERTY()
-		float AccumulatedDeltaTime;
+	float AccumulatedDeltaTime;
 
 	// Pointer to player board to change the clickability
 	UPROPERTY()

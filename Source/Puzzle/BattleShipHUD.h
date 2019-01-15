@@ -1,11 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "Ship.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "BattleShipHUD.generated.h"
+
+#define PLAYER_GAME "Player"
+#define OPPONENT_GAME "Opponent"
+
+class ABattleShipBoard;
+class AShip;
 
 /**
  * ABattleShipHUD class used to manage the HUD of the game
@@ -54,9 +59,9 @@ private:
 	UPROPERTY()
 		TWeakObjectPtr<class UTextBlock> txtScorePlayer;
 
-	// Pointer to txtTurno
+	// Pointer to txtTurn
 	UPROPERTY()
-		TWeakObjectPtr<class UTextBlock> txtTurno;
+		TWeakObjectPtr<class UTextBlock> txtTurn;
 
 	// Pointer to permanent HUD widget class
 	class UClass* pPermanentHUDWidgetClass;
@@ -68,5 +73,5 @@ private:
 	void DestroyedShipDelegateHandler(AShip* Ship);
 
 	// Checks if the ship is in that board
-	bool IsShipInBoard(AShip* Ship, TWeakObjectPtr<ABattleShipBoard> Board);
+	bool IsShipInBoard(AShip* Ship, ABattleShipBoard* Board);
 };

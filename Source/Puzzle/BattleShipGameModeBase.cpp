@@ -3,15 +3,16 @@
 #include "BattleShipGameModeBase.h"
 #include "BattleShipPlayerController.h"
 #include "BattleShipGameStateBase.h"
+#include "Ship.h"
 #include "BattleShipHUD.h"
 #include "EngineMinimal.h"
 
 ABattleShipGameModeBase::ABattleShipGameModeBase() : MaxNumberPlayers(2)
 {
-	DefaultPawnClass = nullptr;
 	PlayerControllerClass = ABattleShipPlayerController::StaticClass();
 	GameStateClass = ABattleShipGameStateBase::StaticClass();
 	HUDClass = ABattleShipHUD::StaticClass();
+	DefaultPawnClass = nullptr;
 }
 
 void ABattleShipGameModeBase::BeginPlay()
@@ -21,12 +22,12 @@ void ABattleShipGameModeBase::BeginPlay()
 
 bool ABattleShipGameModeBase::HasWon(ABattleShipBoard * Board)
 {
-	for (auto& Ship : Board->Ships) {
-		AShip* ShipActor = Ship.GetDefaultObject();
-		UE_LOG(LogTemp, Log, TEXT("--------[GAMEMODE] >> %d -----------\n\n\n"), ShipActor->OccupiedPositions.Num());
-		if (ShipActor->OccupiedPositions.Num() != 0)
-			return false;
+	bool bHasWon = true;
+
+	for (auto& ShipActor : Board->Ships) 
+	{
+		if (ShipActor->OccupiedPositions.Num() != 0) bHasWon = false;
 	}
-	return true;
+	return bHasWon;
 }
 

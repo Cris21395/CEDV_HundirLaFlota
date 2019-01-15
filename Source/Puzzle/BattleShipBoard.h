@@ -44,10 +44,7 @@ public:
 	
 	// Array of Ships in the board
 	UPROPERTY()
-		TArray<TSubclassOf<AShip>> Ships;
-
-	// Check if all ships are destroyed
-	bool AreAllShipsDestroyed();
+		TArray<AShip*> Ships;
 
 protected:
 	// Called when the game starts or when spawned

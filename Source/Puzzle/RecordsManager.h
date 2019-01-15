@@ -26,10 +26,10 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = MapsAndSets)
-		TMap<FString, float> GetRecords() const;
+		TMap<FString, int> GetRecords() const;
 
 	UFUNCTION(BlueprintCallable, Category = "SaveGame")
-		void SaveNewRecord(FString PlayerName, float Duration);
+		void SaveNewRecord(FString PlayerName, int HitShips);
 
 private:
 	UPROPERTY()

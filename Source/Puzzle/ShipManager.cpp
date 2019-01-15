@@ -47,13 +47,6 @@ void AShipManager::BeginPlay()
 			}
 		}
 	}
-
-	// Move ship array to board. ShipClasses will be left empty
-	// This is made so that ships are not replicated
-	for (auto& BattleShipBoardPtr : BattleShipBoardArray)
-	{
-		BattleShipBoardPtr->Ships = MoveTemp(ShipClasses);
-	}
 }
 
 void AShipManager::SpawnRandomShip(ABattleShipBoard* BattleShipBoardPtr, TSubclassOf<AShip> ShipType, bool bMustShipsBeVisible)
@@ -81,25 +74,29 @@ void AShipManager::SpawnRandomShip(ABattleShipBoard* BattleShipBoardPtr, TSubcla
 	AShip* NewShip = nullptr;
 
 	// IsChildOf compares if Class == OtherClass or Class == Child of Other Class
-	if (ShipType->IsChildOf(ABoatShip::StaticClass())) {
+	if (ShipType->IsChildOf(ABoatShip::StaticClass())) 
+	{
 		// Spawn boat
 		Blocklocation += FVector(0.0f, 0.0f, 10.0f); // Offset due to the scale
 		NewShip = GetWorld()->SpawnActor<ABoatShip>(Blocklocation, FRotator(0.0f, 45.0f, 90.0f));
 		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f) * (BlockSize.X*100 + 10));
 	}
-	else if (ShipType->IsChildOf(AVesselShip::StaticClass())) {
+	else if (ShipType->IsChildOf(AVesselShip::StaticClass())) 
+	{
 		// Spawn Vessel
 		Blocklocation += FVector(30.0f, 0.0f, 40.0f); // Offset due to the scale
 		NewShip = GetWorld()->SpawnActor<AVesselShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
 		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f) * (BlockSize.X * 100 + BlockSpacing*(BlockSize.X+0.1f)));
 	}
-	else if (ShipType->IsChildOf(ASubmarineShip::StaticClass())) {
+	else if (ShipType->IsChildOf(ASubmarineShip::StaticClass())) 
+	{
 		// Spawn Submarine
 		Blocklocation += FVector(0.0f, 1.0f, 0.0f) * ((BlockSize.X + BlockSpacing) * 2); // Offset due to the scale
 		NewShip = GetWorld()->SpawnActor<ASubmarineShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
 		NewShip->GetShipMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f) * (BlockSize.X * 100));
 	}
-	else if(ShipType->IsChildOf(ACruisserShip::StaticClass())){
+	else if(ShipType->IsChildOf(ACruisserShip::StaticClass()))
+	{
 		// Spawn Cruiser
 		Blocklocation += FVector(0.0f, 1.0f, 0.0f) * (3489 * BlockSize.X - 7.78 * BlockSpacing); // Offset due to the scale
 		NewShip = GetWorld()->SpawnActor<ACruisserShip>(Blocklocation, FRotator(0.0f, 0.0f, 90.0f));
@@ -113,8 +110,7 @@ void AShipManager::SpawnRandomShip(ABattleShipBoard* BattleShipBoardPtr, TSubcla
 	}
 
 	NewShip->SetOccupiedBlocks(RandomIndex, BattleShipBoardPtr);
-	//**** WE NEED TO ADD THE SHIPS TO THE BOARD CORRECTLY ***//
-	//BattleShipBoardPtr->Ships.Add(TSubclassOf<AShip>(NewShip));
+	BattleShipBoardPtr->Ships.AddUnique(NewShip);
 }
 
 bool AShipManager::IsValidIndex(int32 IndexToCheck, ABattleShipBoard* BattleShipBoardPtr, TSubclassOf<AShip> ShipType)
