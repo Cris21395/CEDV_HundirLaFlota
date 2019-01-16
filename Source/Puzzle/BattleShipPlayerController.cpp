@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "BattleShipGameInstance.h"
 #include "BattleShipPlayerController.h"
+#include "BattleShipHUD.h"
 #include "EngineUtils.h"
 #include "EngineMinimal.h"
 
@@ -19,6 +21,7 @@ void ABattleShipPlayerController::BeginPlay()
 
 	// Turn initialized in player
 	currentTurn = EBattleShipTurn::PLAYER;
+
 }
 
 void ABattleShipPlayerController::Tick(float DeltaSeconds)
@@ -54,6 +57,19 @@ void ABattleShipPlayerController::Tick(float DeltaSeconds)
 		if (AccumulatedDeltaTime >= DelayToFinishGame)
 		{
 			UGameplayStatics::OpenLevel(GetWorld(), TEXT("/Game/Maps/Records"), TRAVEL_Absolute);
+
+			// Set GameInstance reference
+			UBattleShipGameInstance* GameInstance = Cast<UBattleShipGameInstance>(GetWorld()->GetGameInstance());
+
+			// Calculate Score
+			int score = 0;
+			ABattleShipHUD* HUD = Cast<ABattleShipHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+			int NumberOfPlayerShips = HUD->GetPlayerScore();
+			int NumberOfMachineShips = HUD->GetOpponentScore();
+			score = NumberOfPlayerShips - NumberOfMachineShips;
+
+			// Set winner, score and time
+			GameInstance->SetWinnerAndScore(winner, score, AccumulatedDeltaTime);
 
 			AccumulatedDeltaTime = 0.0f;
 		}

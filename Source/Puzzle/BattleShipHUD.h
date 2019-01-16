@@ -28,7 +28,11 @@ public:
 
 	// Called when the turn changes
 	void ChangeTurn();
-	
+
+	// Called when the game is finished to calculate total score
+	int GetPlayerScore();
+	int GetOpponentScore();
+
 private:
 
 	// Pointer to player board

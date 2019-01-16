@@ -55,7 +55,7 @@ private:
 
 	// Pointer to machine board to change the clickability
 	UPROPERTY()
-		TWeakObjectPtr<ABattleShipBoard> BattleShipMechineBoardPtr;
+		TWeakObjectPtr<ABattleShipBoard> BattleShipMachineBoardPtr;
 
 	// Decides if it is allowed to receive input
 	void SetReceiveInput(bool bReceiveInput);

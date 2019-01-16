@@ -36,10 +36,10 @@ void ARecordsManager::SaveNewRecord(FString PlayerName, int HitShips)
 	// Add a new record
 	BattleShipSaveGamePtr->Records.Add(PlayerName, HitShips);
 
-	// Order the TMap regarding the max duration
+	// Order the TMap regarding the score
 	BattleShipSaveGamePtr->Records.ValueSort([](const int& A, const int& B)
 	{
-		return A < B;
+		return A > B;
 	});
 
 	// Save the game

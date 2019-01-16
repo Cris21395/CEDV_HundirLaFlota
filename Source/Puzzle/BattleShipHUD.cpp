@@ -74,6 +74,16 @@ void ABattleShipHUD::ChangeTurn()
 	}
 }
 
+int ABattleShipHUD::GetPlayerScore()
+{
+	return playerDestroyedShips;
+}
+
+int ABattleShipHUD::GetOpponentScore()
+{
+	return opponentDestroyedShips;
+}
+
 void ABattleShipHUD::DestroyedShipDelegateHandler(AShip* Ship) 
 {
 	// It is the same to use playerBoard as opponent

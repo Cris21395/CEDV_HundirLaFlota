@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 
+UENUM(BlueprintType)
 enum class EBattleShipTurn : uint8
 {
 	PLAYER,	// Player turn
