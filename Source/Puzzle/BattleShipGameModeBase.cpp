@@ -2,7 +2,6 @@
 
 #include "BattleShipGameModeBase.h"
 #include "BattleShipPlayerController.h"
-#include "BattleShipGameStateBase.h"
 #include "Ship.h"
 #include "BattleShipHUD.h"
 #include "EngineMinimal.h"
@@ -10,8 +9,8 @@
 ABattleShipGameModeBase::ABattleShipGameModeBase() : MaxNumberPlayers(2)
 {
 	PlayerControllerClass = ABattleShipPlayerController::StaticClass();
-	GameStateClass = ABattleShipGameStateBase::StaticClass();
 	HUDClass = ABattleShipHUD::StaticClass();
+	GameStateClass = nullptr;
 	DefaultPawnClass = nullptr;
 }
 
